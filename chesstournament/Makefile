@@ -43,3 +43,5 @@ fully_update_db:
 test_model:
 	@$(CMD) test models.test_models --keepdb
 
+cache:
+	@rm -rf $(shell find . -type d -name "__pycache__")
