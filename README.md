@@ -1,2 +1,1 @@
-# Chess-Tournament
-Practica 3 PSI
+Practica 3
