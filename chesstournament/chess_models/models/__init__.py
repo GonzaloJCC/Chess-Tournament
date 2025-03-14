@@ -4,3 +4,4 @@
 # flake8 to ignore the fact that the model is never use in this file
 
 from .player import Player # noqa F104
+from .other_models import Referee
