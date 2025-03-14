@@ -68,10 +68,12 @@ class Player(models.Model):
 			models.UniqueConstraint(fields=['name', 'email'], name='unique_name_email')
 		]
 	
-	def save(self, *args, **kwargs):
+	def __str__(self):
+		return self.lichess_username if self.lichess_username else self.name
 
+	def save(self, *args, **kwargs):
 		# Search the user on lichess
-		self.get_lichess_user_rating()
+		self.get_lichess_user_ratings()
 
 		# Search the player on the database
 		existing_player = Player.objects.filter(
@@ -86,12 +88,13 @@ class Player(models.Model):
 			for field in self._meta.fields:
 				if field.name not in ['id', 'creation_date', 'lichess_username', 'fide_id']:
 					setattr(existing_player, field.name, getattr(self, field.name))
+			self.id = existing_player.id
 			existing_player.save()
 		else:
 			# Otherwise, save the current instance as a new player
 			super().save(*args, **kwargs)
-	
-	def check_lichess_exists(self) -> bool:
+
+	def check_lichess_user_exists(self) -> bool:
 		# Check if the field has a value
 		if self.lichess_username is None:
 			return False
@@ -102,8 +105,8 @@ class Player(models.Model):
 		)
 		return response.status_code == 200
 	
-	def get_lichess_user_rating(self) -> None:
-		if self.lichess_username is not None and self.check_lichess_exists():
+	def get_lichess_user_ratings(self) -> None:
+		if self.lichess_username is not None and self.check_lichess_user_exists():
 			response = requests.get(
 				f'https://lichess.org/api/user/{self.lichess_username}'
 			)
