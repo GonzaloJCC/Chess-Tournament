@@ -6,3 +6,4 @@
 from .player import Player # noqa F104
 from .other_models import Referee
 from .tournament import Tournament, RankingSystemClass
+from .round import Round
