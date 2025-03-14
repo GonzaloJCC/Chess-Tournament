@@ -157,5 +157,5 @@ node_modules
 *.sw?
 
 # migrations
-migrations/*.py
-!migrations/__init__
+migrations/
+!migrations/__init__.py
