@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from .player import Player
+from .round import Round
+from .game import Game
 from .other_models import Referee
 from .constants import (TournamentType,
 						TournamentSpeed,
@@ -67,7 +69,6 @@ class Tournament(models.Model):
 	# List of classification system, associated with a tournament through the tournament ranking system
 	rankingList = models.ManyToManyField(to=RankingSystemClass, blank=True) # null=True has no effects
 
-
 	def getPlayers(self, sorted=False):
 		# Get all the players	
 		players = self.players.all()
@@ -99,6 +100,53 @@ class Tournament(models.Model):
 	def getPlayersCount(self):
 		return self.players.all().count()
 	
+	def cleanRankingList(self):
+		self.rankingList.clear()
+	
+	def addToRankingList(self, rankingSystem: RankingSystem.value):
+		createdRankingSystem = RankingSystemClass.objects.create(value=rankingSystem)
+		self.rankingList.add(createdRankingSystem)
+
+	def getRoundCount(self):
+		return Round.objects.filter(tournament=self).count()
+
+	def get_number_of_rounds_with_games(self):
+		# Get the tournament rounds
+		rounds = Round.objects.filter(tournament=self).all()
+
+		# For each round, check if any game has finished
+		count = 0
+		for round in rounds:
+			# Get all the games
+			games = Game.objects.filter(round=round).all()
+
+			# Check if anyone has finished
+			for game in games:
+				if game.finished:
+					count += 1
+					break
+		return count
+	
+	def get_latest_round_with_games(self):
+		rounds = Round.objects.filter(tournament=self).all()
+		
+		# Iterate on the rounds
+		last_round = None
+		last_date = None
+		for round in rounds:
+			games = Game.objects.filter(round=round).all()
+
+			# Check the round games
+			for game in games:
+				modified_date = game.update_date != game.start_date
+
+				# If it has a more recent date, save it
+				if last_date is None or \
+				(modified_date and last_date < game.update_date):
+					last_date = game.update_date
+					last_round = round
+		
+		return last_round
 
 class TournamentPlayers(models.Model):
 	# Tournament id
