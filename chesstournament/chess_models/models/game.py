@@ -1,7 +1,7 @@
 from django.db import models
 from .player import Player
 from .round import Round
-from constants import Scores
+from .constants import Scores
 
 import requests
 
@@ -13,15 +13,15 @@ def create_rounds(tournament, swissByes=[]):
 class Game(models.Model):
 
     # White player, deleting on cascade deletes the player games
-    white = models.ForeignKey(to=Player, null=True, on_delete=models.CASCADE)
+    white = models.ForeignKey(to=Player, null=True, on_delete=models.CASCADE, related_name="white")
 
     # Black player
-    black = models.ForeignKey(to=Player, null=True, on_delete=models.CASCADE)
+    black = models.ForeignKey(to=Player, null=True, on_delete=models.CASCADE, related_name="black")
 
     # If the game ended, if true players can not edit the game
     finished = models.BooleanField(default=False)
 
-    # The tournament round, delete mode = ? # TODO: deletemode?
+    # The tournament round
     round = models.ForeignKey(to=Round, null=False, on_delete=models.CASCADE)
 
     # The start date and time of the game
