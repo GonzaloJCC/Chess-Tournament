@@ -59,3 +59,6 @@ class Game(models.Model):
             game_result = Scores.DRAW
 
         return game_result, white_player, black_player
+
+    def __str__(self):
+    	return f"{self.rankingOrder}"
