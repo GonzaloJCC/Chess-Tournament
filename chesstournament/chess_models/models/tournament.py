@@ -23,7 +23,7 @@ class Tournament(models.Model):
 	administrativeUser = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
 
 	# Players references
-	players = models.ManyToManyField(to=Player, blank=True) # null=True has no effects
+	players = models.ManyToManyField(to=Player, through='TournamentPlayers', blank=True) # null=True has no effects
 
 	# Referee reference
 	referee = models.ForeignKey(to=Referee, null=True, on_delete=models.CASCADE)
@@ -67,6 +67,7 @@ class Tournament(models.Model):
 	# List of classification system, associated with a tournament through the tournament ranking system
 	rankingList = models.ManyToManyField(to=RankingSystemClass, blank=True) # null=True has no effects
 
+
 	def getPlayers(self, sorted=False):
 		# Get all the players	
 		players = self.players.all()
@@ -97,3 +98,14 @@ class Tournament(models.Model):
 
 	def getPlayersCount(self):
 		return self.players.all().count()
+	
+
+class TournamentPlayers(models.Model):
+	# Tournament id
+	tournament_id = models.ForeignKey(to=Tournament, null=False, blank=False, on_delete=models.CASCADE)
+
+	# Player id
+	player_id = models.ForeignKey(to=Player, null=False, blank=True, on_delete=models.CASCADE)
+
+	# Date when the player enter the tournament
+	date = models.DateTimeField(auto_now=True)
