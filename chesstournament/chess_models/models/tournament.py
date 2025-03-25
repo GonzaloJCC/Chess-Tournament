@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from .player import Player
-from .round import Round
-from .game import Game
 from .other_models import Referee
 from .constants import (TournamentType,
 						TournamentSpeed,
@@ -103,15 +101,18 @@ class Tournament(models.Model):
 	def cleanRankingList(self):
 		self.rankingList.clear()
 	
-	def addToRankingList(self, rankingSystem: RankingSystem.value):
+	def addToRankingList(self, rankingSystem):
 		createdRankingSystem = RankingSystemClass.objects.create(value=rankingSystem)
 		self.rankingList.add(createdRankingSystem)
 
 	def getRoundCount(self):
+		from .round import Round
 		return Round.objects.filter(tournament=self).count()
 
 	def get_number_of_rounds_with_games(self):
 		# Get the tournament rounds
+		from .round import Round
+		from .game import Game
 		rounds = Round.objects.filter(tournament=self).all()
 
 		# For each round, check if any game has finished
@@ -128,6 +129,8 @@ class Tournament(models.Model):
 		return count
 	
 	def get_latest_round_with_games(self):
+		from .round import Round
+		from .game import Game
 		rounds = Round.objects.filter(tournament=self).all()
 		
 		# Iterate on the rounds
@@ -138,11 +141,8 @@ class Tournament(models.Model):
 
 			# Check the round games
 			for game in games:
-				modified_date = game.update_date != game.start_date
-
 				# If it has a more recent date, save it
-				if last_date is None or \
-				(modified_date and last_date < game.update_date):
+				if last_date is None or last_date < game.update_date:
 					last_date = game.update_date
 					last_round = round
 		
@@ -150,10 +150,44 @@ class Tournament(models.Model):
 
 class TournamentPlayers(models.Model):
 	# Tournament id
-	tournament_id = models.ForeignKey(to=Tournament, null=False, blank=False, on_delete=models.CASCADE)
+	tournament = models.ForeignKey(to=Tournament, null=False, blank=False, on_delete=models.CASCADE)
 
 	# Player id
-	player_id = models.ForeignKey(to=Player, null=False, blank=True, on_delete=models.CASCADE)
+	player = models.ForeignKey(to=Player, null=False, blank=False, on_delete=models.CASCADE)
 
 	# Date when the player enter the tournament
 	date = models.DateTimeField(auto_now=True)
+
+	class Meta:
+			unique_together = ('tournament', 'player')
+
+# def getScores(tournament: Tournament):
+# 	result_dict = dict()
+# 
+# 	# Get the players
+# 	players = tournament.getPlayers()
+# 
+# 	# Get the methods to check
+# 	rankingList = tournament.rankingList.all()
+# 
+# 	for player in players:
+# 		result_dict[player] = {}
+# 
+# 		for ranking in rankingList:
+# 			if ranking == RankingSystem.BUCHHOLZ.value:
+# 				...
+# 			elif ranking == RankingSystem.BUCHHOLZ_CUT1.value:
+# 				...
+# 			elif ranking == RankingSystem.BUCHHOLZ_AVERAGE.value:
+# 				...
+# 			elif ranking == RankingSystem.SONNEBORN_BERGER.value:
+# 				...
+# 			elif ranking == RankingSystem.PLAIN_SCORE.value:
+# 				...
+# 			elif ranking == RankingSystem.WINS.value:
+# 				...
+# 			elif ranking == RankingSystem.BLACKTIMES.value:
+# 				...
+# 
+# 			result_dict[player][rankingList] = 0
+		
