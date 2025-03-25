@@ -9,3 +9,10 @@ class Referee(models.Model):
 
 	def __str__(self):
 		return f"{self.name} ({self.refereeNumber})"
+	
+class LichessAPIError(Exception):
+	def __init__(self, msg):
+		self.msg = msg
+
+	def __str__(self):
+		return self.msg
