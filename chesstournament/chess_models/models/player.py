@@ -1,5 +1,6 @@
 from django.db import models
 import requests
+from .other_models import LichessAPIError
 
 class Player(models.Model):
 
@@ -103,15 +104,24 @@ class Player(models.Model):
 		response = requests.get(
 			f'https://lichess.org/api/user/{self.lichess_username}'
 		)
+
+		# if response.status_code != 200:
+		# 	raise LichessAPIError(f"Error fetching user data: {response.status_code}")
+		# return True
+	
 		return response.status_code == 200
 	
 	def get_lichess_user_ratings(self) -> None:
-		if self.lichess_username is not None and self.check_lichess_user_exists():
-			response = requests.get(
-				f'https://lichess.org/api/user/{self.lichess_username}'
-			)
-			data = response.json()
-			self.lichess_rating_bullet = data['perfs']['bullet']['rating']
-			self.lichess_rating_blitz = data['perfs']['blitz']['rating']
-			self.lichess_rating_rapid = data['perfs']['rapid']['rating']
-			self.lichess_rating_classical = data['perfs']['classical']['rating']
+		if self.lichess_username is None:
+			return
+
+		response = requests.get(
+			f'https://lichess.org/api/user/{self.lichess_username}'
+		)
+		if response.status_code != 200:
+			raise LichessAPIError(f"Error fetching user '{self.lichess_username}' data: {response.status_code}")
+		data = response.json()
+		self.lichess_rating_bullet = data['perfs']['bullet']['rating']
+		self.lichess_rating_blitz = data['perfs']['blitz']['rating']
+		self.lichess_rating_rapid = data['perfs']['rapid']['rating']
+		self.lichess_rating_classical = data['perfs']['classical']['rating']
