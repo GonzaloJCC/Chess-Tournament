@@ -1,12 +1,12 @@
 from django.db import models
-from .tournament import Tournament
+# from .tournament import Tournament
 
 class Round(models.Model):
 	# Round name.
 	name = models.CharField(max_length=128, null=False, blank=False)
 
 	# Tournament reference
-	tournament = models.ForeignKey(to=Tournament, null=False, blank=False, on_delete=models.CASCADE)
+	tournament = models.ForeignKey(to='chess_models.Tournament', null=False, blank=False, on_delete=models.CASCADE)
 
 	# Round start date and hour. Can be null
 	start_date = models.DateTimeField(auto_now_add=True, null=True)
