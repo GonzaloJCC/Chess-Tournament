@@ -2,12 +2,32 @@ from django.db import models
 from .player import Player
 from .round import Round
 from .constants import Scores
+from .tournament import Tournament
+from .other_models import LichessAPIError
 
 import requests
 
 # swissByes not needed, implements ROUNDROBIN case with an even number of players
-def create_rounds(tournament, swissByes=[]):
-    ... # TODO: this function
+def create_rounds(tournament: Tournament, swissByes=[]):
+    # Get the players and their ids
+    players = tournament.players.all()
+    players_ids = sorted([player.id for player in players])
+
+    # Select the omve and fixed players
+    fixed_player = players_ids[-1]
+    moved_players = players_ids[:-1]
+
+    # Iterate, creating duels
+    rounds = []
+    for i in range(len(players_ids - 1)):
+        duels = [fixed_player, moved_players[0]]
+        for j in range(1, len(moved_players) // 2 + 1):
+            duels.append(fixed_player[j], fixed_player[-j])
+        rounds.append(duels)
+        moved_players = [moved_players[-1]] + moved_players[:-1]
+    
+    # Return the list of the created rounds
+    return rounds
 
 
 class Game(models.Model):
@@ -43,7 +63,7 @@ class Game(models.Model):
 
         if response.status_code != 200:
             # Handle unsuccessful response
-            raise Exception(f"Error fetching game data: {response.status_code}")
+            raise LichessAPIError(f"Error fetching game data: {response.status_code}")
 
         data = response.json()
 
