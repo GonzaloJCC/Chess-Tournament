@@ -5,7 +5,7 @@
 
 from .constants import *
 from .player import Player # noqa F104
-from .other_models import Referee
+from .other_models import Referee, LichessAPIError
 from .tournament import Tournament, RankingSystemClass
 from .round import Round
-from .game import Game
+from .game import Game, create_rounds
