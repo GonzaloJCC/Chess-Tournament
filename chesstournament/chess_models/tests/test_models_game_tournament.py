@@ -2,11 +2,17 @@ from django.test import TransactionTestCase, tag
 from chess_models.models import Tournament, Round, Game
 # from chess_models.models import (
 #    LichessAPIError, TournamentType, Scores)
-from chess_models.models import (getScores, getRanking, getPlayers,
-                                 getOpponents, getBuchholz,
-                                 getAdjustedScores, getBuchholzCutMinusOne,
-                                 getMediamBuchholz, getSonnebornBerger,
+from chess_models.models import (getScores, getRanking,
                                  getBlackWins)
+
+try:
+    from chess_models.models import (getMediamBuchholz, getSonnebornBerger,
+                                     getBuchholzCutMinusOne,  getBuchholz,
+                                    getOpponents, getAdjustedScores, getPlayers
+                                     )
+except ImportError:
+    pass
+
 from chess_models.models.constants import (TournamentSpeed, TournamentType,
                                            TournamentBoardType, RankingSystem)
 
