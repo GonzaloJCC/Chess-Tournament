@@ -68,8 +68,13 @@ class Game(models.Model):
         data = response.json()
 
         # Fixing the inconsistent quotes
-        white_player = data['players']['white']
-        black_player = data['players']['black']
+        white_player = data['players']['white']['userId']
+        if white_player != self.white.lichess_username:
+            raise LichessAPIError(f"The player {self.white.lichess_username} is not {white_player}")
+
+        black_player = data['players']['black']['userId']
+        if black_player != self.black.lichess_username:
+            raise LichessAPIError(f"The player {self.black.lichess_username} is not {black_player}")
 
         if data['winner'] == 'white':
             game_result = Scores.WHITE
@@ -78,7 +83,11 @@ class Game(models.Model):
         else:
             game_result = Scores.DRAW
 
+        # TODO: Update data?
+
         return game_result, white_player, black_player
 
     def __str__(self):
-    	return f"{self.rankingOrder}"
+        white_data = f'{str(self.white)}({self.white.id})'
+        black_data = f'{str(self.black)}({self.black.id})'
+        return f'{white_data} vs {black_data} = {self.result.label}'
