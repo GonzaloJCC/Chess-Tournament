@@ -67,6 +67,9 @@ class Tournament(models.Model):
 	# List of classification system, associated with a tournament through the tournament ranking system
 	rankingList = models.ManyToManyField(to=RankingSystemClass, blank=True) # null=True has no effects
 
+	def __str__(self):
+		return f"tournament_{self.id:02d}"
+
 	def getPlayers(self, sorted=False):
 		# Get all the players	
 		players = self.players.all()
@@ -161,33 +164,42 @@ class TournamentPlayers(models.Model):
 	class Meta:
 			unique_together = ('tournament', 'player')
 
-# def getScores(tournament: Tournament):
-# 	result_dict = dict()
-# 
-# 	# Get the players
-# 	players = tournament.getPlayers()
-# 
-# 	# Get the methods to check
-# 	rankingList = tournament.rankingList.all()
-# 
-# 	for player in players:
-# 		result_dict[player] = {}
-# 
-# 		for ranking in rankingList:
-# 			if ranking == RankingSystem.BUCHHOLZ.value:
-# 				...
-# 			elif ranking == RankingSystem.BUCHHOLZ_CUT1.value:
-# 				...
-# 			elif ranking == RankingSystem.BUCHHOLZ_AVERAGE.value:
-# 				...
-# 			elif ranking == RankingSystem.SONNEBORN_BERGER.value:
-# 				...
-# 			elif ranking == RankingSystem.PLAIN_SCORE.value:
-# 				...
-# 			elif ranking == RankingSystem.WINS.value:
-# 				...
-# 			elif ranking == RankingSystem.BLACKTIMES.value:
-# 				...
-# 
-# 			result_dict[player][rankingList] = 0
-		
+# TODO: 
+def getScores(tournament: Tournament):
+	pass
+	result_dict = dict()
+
+	# Get the players
+	players = tournament.getPlayers()
+
+	# Get the methods to check
+	rankingList = tournament.rankingList.all()
+
+	for player in players:
+		result_dict[player] = {}
+
+		for ranking in rankingList:
+			# if ranking == RankingSystem.BUCHHOLZ.value:
+			# 	...
+			# elif ranking == RankingSystem.BUCHHOLZ_CUT1.value:
+			# 	...
+			# elif ranking == RankingSystem.BUCHHOLZ_AVERAGE.value:
+			# 	...
+			# elif ranking == RankingSystem.SONNEBORN_BERGER.value:
+			# 	...
+			# elif ranking == RankingSystem.PLAIN_SCORE.value:
+			# 	...
+			if ranking == RankingSystem.WINS.value:
+				...
+			elif ranking == RankingSystem.BLACKTIMES.value:
+				...
+
+			result_dict[player][rankingList] = 0
+
+# TODO: 
+def getBlackWins(tournament, results):
+	pass
+
+# TODO: 
+def getRanking(tournament):
+	pass
