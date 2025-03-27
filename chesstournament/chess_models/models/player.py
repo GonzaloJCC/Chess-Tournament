@@ -78,22 +78,24 @@ class Player(models.Model):
 
 		# Search the player on the database
 		existing_player = Player.objects.filter(
-			models.Q(id=self.id) |
-			models.Q(lichess_username=self.lichess_username) |
-			models.Q(fide_id=self.fide_id) |
-			models.Q(name=self.name, email=self.email)
+			(models.Q(id=self.id) & ~models.Q(id=None)) |
+			(models.Q(lichess_username=self.lichess_username) & ~models.Q(lichess_username=None)) |
+			(models.Q(fide_id=self.fide_id) & ~models.Q(fide_id=None)) |
+			(models.Q(name=self.name, email=self.email) & ~models.Q(name=None) & ~models.Q(email=None))
 		).exclude(pk=self.pk).first()
 
 		# If it exists, update the info
 		if existing_player:
 			for field in self._meta.fields:
 				if field.name not in ['id', 'creation_date', 'lichess_username', 'fide_id']:
-					setattr(existing_player, field.name, getattr(self, field.name))
+					new_value = getattr(self, field.name)
+					if new_value is not None:
+						setattr(existing_player, field.name, new_value)
 			self.id = existing_player.id
-			existing_player.save()
+			return existing_player.save()
 		else:
 			# Otherwise, save the current instance as a new player
-			super().save(*args, **kwargs)
+			return super().save(*args, **kwargs)
 
 	def check_lichess_user_exists(self) -> bool:
 		# Check if the field has a value
