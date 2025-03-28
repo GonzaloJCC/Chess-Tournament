@@ -48,8 +48,14 @@ class TournamentModelTest(TransactionTestCase):
         tournament_name = 'tournament_01'
         tournament = Tournament.objects.create(
             name=tournament_name)
-        referee = Referee.objects.create(
-            name='referee_01', refereeNumber='12345678')
+        referee_number = '12345678'
+        referee_name = 'referee'
+        try:
+            referee = Referee.objects.create(
+                name=referee_name, refereeNumber=referee_number)
+        except :
+            referee = Referee.objects.create(
+                name=referee_name, referee_number=referee_number)
         tournament.referee = referee
         self.assertEqual(tournament.referee, referee)
 
@@ -61,7 +67,7 @@ class TournamentModelTest(TransactionTestCase):
             value=rankingSystem)
         self.assertEqual(rankingSystemClass.value, rankingSystem)
 
-    @tag("continua")
+    @tag("continuadelete")
     def test_0035_tournament_rankingList(self):
         """add rankingList to tournament
         Ranking are saved as manytomany field in the model Tournament
@@ -73,6 +79,7 @@ class TournamentModelTest(TransactionTestCase):
         rankingSystem2 = RankingSystem.SONNEBORN_BERGER
         tournament.addToRankingList(rankingSystem1)
         tournament.addToRankingList(rankingSystem2)
+        
         rankingSystemList = [r.value for r in tournament.getRankingList()]
         self.assertEqual(tournament.rankingList.count(), 2)
         self.assertTrue(rankingSystem1 in rankingSystemList)
