@@ -6,7 +6,8 @@ from .other_models import Referee
 from .constants import (TournamentType,
 						TournamentSpeed,
 						TournamentBoardType,
-						RankingSystem)
+						RankingSystem,
+						Scores)
 
 class RankingSystemClass(models.Model):
 	value = models.CharField(
@@ -164,9 +165,49 @@ class TournamentPlayers(models.Model):
 	class Meta:
 			unique_together = ('tournament', 'player')
 
-# TODO: 
+# TODO:
+
+def get_wins(tournament: Tournament, player: Player):		# returns the points, the wins and the times played as black
+	from .round import Round
+	from .game import Game
+	countWins = 0
+	points = 0
+	countBlack = 0
+	for round in Round.objects.filter(tournament=tournament).all():
+		for game in Game.objects.filter(round=round).all():
+			#check if he wins as black, as white or loses
+			if player not in [game.black, game.white] or game.finished is False or game.result == Scores.NOAVAILABLE:
+				continue
+
+			if game.result == Scores.DRAW:
+				points += tournament.draw_points
+			elif game.white == player and game.result == Scores.WHITE:
+				points += tournament.win_points
+				countWins += 1
+			elif game.black == player and game.result == Scores.BLACK:
+				points += tournament.win_points
+				countWins += 1
+			elif game.result == Scores.BYE_H:
+				points += 0.5
+			elif game.result == Scores.BYE_F:
+				points += 1
+			elif game.result == Scores.BYE_U:
+				points += 1
+			elif game.result == Scores.BYE_Z:
+				points += 0
+			elif game.result == Scores.FORFEITWIN:
+				points += tournament.win_points
+
+
+			else:
+				points += tournament.lose_points
+
+			if game.black == player:
+				countBlack += 1
+
+	return points, countWins, countBlack
+
 def getScores(tournament: Tournament):
-	pass
 	result_dict = dict()
 
 	# Get the players
@@ -178,27 +219,20 @@ def getScores(tournament: Tournament):
 	for player in players:
 		result_dict[player] = {}
 
-		for ranking in rankingList:
-			# if ranking == RankingSystem.BUCHHOLZ.value:
-			# 	...
-			# elif ranking == RankingSystem.BUCHHOLZ_CUT1.value:
-			# 	...
-			# elif ranking == RankingSystem.BUCHHOLZ_AVERAGE.value:
-			# 	...
-			# elif ranking == RankingSystem.SONNEBORN_BERGER.value:
-			# 	...
-			# elif ranking == RankingSystem.PLAIN_SCORE.value:
-			# 	...
-			if ranking == RankingSystem.WINS.value:
-				...
-			elif ranking == RankingSystem.BLACKTIMES.value:
-				...
+		score, _, _ = get_wins(tournament, player)
+		result_dict[player][RankingSystem.PLAIN_SCORE] = score
 
-			result_dict[player][rankingList] = 0
+	return result_dict
 
 # TODO: 
 def getBlackWins(tournament, results):
-	pass
+	# hacer un diccionario
+	_, wins, blackTimes = get_wins(tournament, player)
+	WINS = RankingSystem.WINS.value
+	BLACKTIMES = RankingSystem.BLACKTIMES.value
+	result_dict = dict()
+	return_dicts = dict()
+	for player in
 
 # TODO: 
 def getRanking(tournament):
