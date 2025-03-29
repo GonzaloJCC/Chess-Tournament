@@ -226,13 +226,14 @@ def getScores(tournament: Tournament):
 
 # TODO: 
 def getBlackWins(tournament, results):
+	pass
 	# hacer un diccionario
-	_, wins, blackTimes = get_wins(tournament, player)
-	WINS = RankingSystem.WINS.value
-	BLACKTIMES = RankingSystem.BLACKTIMES.value
-	result_dict = dict()
-	return_dicts = dict()
-	for player in
+	# _, wins, blackTimes = get_wins(tournament, player)
+	# WINS = RankingSystem.WINS.value
+	# BLACKTIMES = RankingSystem.BLACKTIMES.value
+	# result_dict = dict()
+	# return_dicts = dict()
+	# for player in
 
 # TODO: 
 def getRanking(tournament):
