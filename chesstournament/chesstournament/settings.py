@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 	
     # Apps
     'chess_models',
+	'api'
 ]
 
 REST_FRAMEWORK = {

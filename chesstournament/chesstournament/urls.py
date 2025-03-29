@@ -24,4 +24,7 @@ urlpatterns = [
     # Djoser routes
 	path('api/v1/', include('djoser.urls')),
 	path('api/v1/', include('djoser.urls.authtoken')),
+	
+    # API routes
+	path('api/v1/', include('api.urls')),
 ]
