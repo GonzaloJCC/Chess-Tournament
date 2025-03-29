@@ -68,6 +68,9 @@ class Tournament(models.Model):
 	# List of classification system, associated with a tournament through the tournament ranking system
 	rankingList = models.ManyToManyField(to=RankingSystemClass, blank=True) # null=True has no effects
 
+	class Meta:
+		ordering = ['id']
+
 	def __str__(self):
 		return f"tournament_{self.id:02d}"
 
