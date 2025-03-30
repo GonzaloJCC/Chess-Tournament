@@ -1,16 +1,19 @@
 # from django.shortcuts import render
 from rest_framework import viewsets, pagination
 from rest_framework.permissions import AllowAny
+from rest_framework.exceptions import PermissionDenied
 
 from chess_models.models import (
 	Referee,
 	Player,
+	Game,
 	Tournament,
 	Round
 )
 from chess_models.serializers import (
 	RefereeSerializer,
 	PlayerSerializer,
+	GameSerializer,
 	TournamentSerializer,
 	RoundSerializer
 )
@@ -35,6 +38,26 @@ class RefereeViewSet(viewsets.ModelViewSet):
 class PlayerViewSet(viewsets.ModelViewSet):
 	queryset = Player.objects.all()
 	serializer_class = PlayerSerializer
+
+class GameViewSet(viewsets.ModelViewSet):
+	queryset = Game.objects.all()
+	serializer_class = GameSerializer
+
+	def get_permissions(self):
+		if self.action == 'update':
+			return [AllowAny()]
+		return super().get_permissions()
+
+	def update(self, request, *args, **kwargs):
+		instance = self.get_object()
+		if not instance.finished:
+			response = super().update(request, *args, **kwargs)
+			instance.finished = True
+			instance.save()
+			return response
+		else:
+			raise PermissionDenied("This game has already finished and cannot be updated.")
+
 
 class TournamentViewSet(viewsets.ModelViewSet):
 	queryset = Tournament.objects.all()

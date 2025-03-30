@@ -3,6 +3,7 @@ from django.urls import path, include
 from .views import (
 	RefereeViewSet,
 	PlayerViewSet,
+	GameViewSet,
 	TournamentViewSet,
 	RoundViewSet
 )
@@ -11,7 +12,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'referees', RefereeViewSet)
 router.register(r'players', PlayerViewSet)
-# router.register(r'games', GameViewSet)
+router.register(r'games', GameViewSet)
 router.register(r'tournaments', TournamentViewSet)
 router.register(r'rounds', RoundViewSet)
 # router.register(r'users', CustomUserViewSet)
