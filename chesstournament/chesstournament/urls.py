@@ -21,10 +21,10 @@ urlpatterns = [
 	# Admin panel
     path('admin/', admin.site.urls),
 	
+    # API routes
+	path('api/v1/', include('api.urls')),
+	
     # Djoser routes
 	path('api/v1/', include('djoser.urls')),
 	path('api/v1/', include('djoser.urls.authtoken')),
-	
-    # API routes
-	path('api/v1/', include('api.urls')),
 ]

@@ -1,7 +1,9 @@
 # from django.shortcuts import render
-from rest_framework import viewsets, pagination
+from rest_framework import viewsets, pagination, status
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
+from djoser import views
 
 from chess_models.models import (
 	Referee,
@@ -74,3 +76,10 @@ class TournamentViewSet(viewsets.ModelViewSet):
 class RoundViewSet(viewsets.ModelViewSet):
 	queryset = Round.objects.all()
 	serializer_class = RoundSerializer
+
+class CustomUserViewSet(views.UserViewSet):
+	def create(self, request, *args, **kwargs):
+		return Response(
+			{'error': 'Method not allowed'},
+			status=status.HTTP_405_METHOD_NOT_ALLOWED
+		)

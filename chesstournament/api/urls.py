@@ -5,7 +5,8 @@ from .views import (
 	PlayerViewSet,
 	GameViewSet,
 	TournamentViewSet,
-	RoundViewSet
+	RoundViewSet,
+	CustomUserViewSet
 )
 
 # Define the router and register the viewsets
@@ -15,7 +16,7 @@ router.register(r'players', PlayerViewSet)
 router.register(r'games', GameViewSet)
 router.register(r'tournaments', TournamentViewSet)
 router.register(r'rounds', RoundViewSet)
-# router.register(r'users', CustomUserViewSet)
+router.register(r'users', CustomUserViewSet, basename='user')
 
 # Save the router urls
 urlpatterns = [
