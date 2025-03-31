@@ -143,3 +143,26 @@ class CreateRoundAPIView(APIView):
 			{'result': True},
 			status=status.HTTP_201_CREATED
 		)
+	
+class SearchTournamentsAPIView(APIView):
+	permission_classes = []
+
+	def post(self, request):
+		search_string = request.data.get('search_string')
+		if not search_string:
+			return Response(
+				{
+					'result': False,
+					'message': 'search_string is required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Get all the tournaments
+		tournaments = Tournament.objects.filter(name__icontains=search_string)
+
+		# Serialize the tournaments
+		serializer = TournamentSerializer(tournaments, many=True)
+		return Response(
+			serializer.data,
+			status=status.HTTP_200_OK
+		)

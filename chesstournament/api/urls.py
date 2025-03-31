@@ -9,6 +9,7 @@ from .views import (
 	CustomUserViewSet,
 
 	CreateRoundAPIView,
+	SearchTournamentsAPIView,
 )
 
 # Define the router and register the viewsets
@@ -27,4 +28,5 @@ urlpatterns = [
 
 	# Endpoints
 	path('create_round', CreateRoundAPIView.as_view(), name='create-round'),
+	path('searchTournaments', SearchTournamentsAPIView.as_view(), name='search-tournaments'),
 ]
