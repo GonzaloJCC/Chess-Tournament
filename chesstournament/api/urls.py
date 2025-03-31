@@ -6,7 +6,9 @@ from .views import (
 	GameViewSet,
 	TournamentViewSet,
 	RoundViewSet,
-	CustomUserViewSet
+	CustomUserViewSet,
+
+	CreateRoundAPIView,
 )
 
 # Define the router and register the viewsets
@@ -20,5 +22,9 @@ router.register(r'users', CustomUserViewSet, basename='user')
 
 # Save the router urls
 urlpatterns = [
+	# Router URLS
 	path('', include(router.urls)),
+
+	# Endpoints
+	path('create_round', CreateRoundAPIView.as_view(), name='create-round'),
 ]

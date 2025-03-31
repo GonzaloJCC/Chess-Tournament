@@ -2,17 +2,20 @@
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from djoser.views import UserViewSet
+from rest_framework.views import APIView
 
 from chess_models.models import (
 	Referee,
 	Player,
 	Game,
 	Tournament,
-	Round
+	Round,
+
+	create_rounds
 )
 from chess_models.serializers import (
 	RefereeSerializer,
@@ -82,4 +85,61 @@ class CustomUserViewSet(UserViewSet):
 		return Response(
 			{'error': 'Method not allowed'},
 			status=status.HTTP_405_METHOD_NOT_ALLOWED
+		)
+
+
+###################
+# NOTE: Endpoints #
+###################
+class CreateRoundAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+	
+	def post(self, request):
+
+		# Get the tournament id
+		tournament_id = request.data.get('tournament_id')
+		if not tournament_id:
+			return Response(
+				{
+					'result': False,
+					'message': 'Tournament ID is required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		tournament_id = int(tournament_id)
+
+		# Search the tournament
+		tournament = Tournament.objects.get(id=tournament_id)
+		if not tournament:
+			return Response(
+				{
+					'result': False,
+					'message': 'Tournament not found'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Check the are enought players on the tournament
+		if tournament.players.count() == 0:
+			return Response(
+				{
+					'result': False,
+					'message': 'Tournament has no players'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+
+		# Create the rounds
+		rounds = create_rounds(tournament, [])
+		if len(rounds) == 0:
+			return Response(
+				{
+					'result': False,
+					'message': 'No rounds created'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# TODO: Insert the rounds
+		
+		# Return a corerct response
+		return Response(
+			{'result': True},
+			status=status.HTTP_201_CREATED
 		)
