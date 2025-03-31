@@ -11,6 +11,10 @@ import requests
 def create_rounds(tournament: Tournament, swissByes=[]):
     # Get the players and their ids
     players = tournament.players.all()
+
+    # Check the players count
+    if len(players) < 2 and len(players) % 2 != 0:
+        return []
     players_ids = sorted([player.id for player in players])
 
     # Select the omve and fixed players
