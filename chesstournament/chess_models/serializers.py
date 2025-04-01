@@ -4,7 +4,8 @@ from .models import (
 	Player,
 	Game,
 	Tournament,
-	Round
+	Round,
+	RankingSystemClass
 )
 
 class RefereeSerializer(serializers.ModelSerializer):
@@ -23,9 +24,36 @@ class GameSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 class TournamentSerializer(serializers.ModelSerializer):
+
+	# Save the players as a string that will be formatted
+	players = serializers.CharField(required=False, allow_blank=True)
+
+	# Save the list of the ranking list as an array
+	rankingList = serializers.PrimaryKeyRelatedField(
+		queryset=RankingSystemClass.objects.all(),
+		many=True,
+		required=False
+	)
+
 	class Meta:
 		model = Tournament
-		fields = '__all__'
+		fields = [
+			'name',
+			'only_administrative',
+			'tournament_type',
+			'board_type',
+			'win_points',
+			'draw_points',
+			'lose_points',
+			'tournament_speed',
+			'rankingList',
+			'players',
+		]
+	
+	def validate_name(self, value):
+		if Tournament.objects.filter(name=value).exists():
+			raise serializers.ValidationError("Tournament with this name already exists.")
+		return value
 
 class RoundSerializer(serializers.ModelSerializer):	
 	class Meta:
