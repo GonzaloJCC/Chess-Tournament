@@ -10,7 +10,7 @@ from .views import (
 
 	CreateRoundAPIView,
 	SearchTournamentsAPIView,
-	# TournamentCreateAPIView,
+	TournamentCreateAPIView,
 	# GetRanking,
 	# GetPlayers,
 	# GetRoundResults,
@@ -36,7 +36,7 @@ urlpatterns = [
 	# Endpoints
 	path('create_round', CreateRoundAPIView.as_view(), name='create-round'),
 	path('searchTournaments', SearchTournamentsAPIView.as_view(), name='search-tournaments'),
-	# path('tournament_create', TournamentCreateAPIView.as_view(), name='tournament-create'),
+	path('tournament_create', TournamentCreateAPIView.as_view(), name='tournament-create'),
 	# path('get_ranking/<int:tournament_id>', GetRanking.as_view(), name='get-ranking'),
 	# path('get_players/<int:tournament_id>', GetPlayers.as_view(), name='get-players'),
 	# path('get_round_results/<int:tournament_id>', GetRoundResults.as_view(), name='get-round-results'),

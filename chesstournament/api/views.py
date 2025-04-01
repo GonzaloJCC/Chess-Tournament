@@ -166,3 +166,29 @@ class SearchTournamentsAPIView(APIView):
 			serializer.data,
 			status=status.HTTP_200_OK
 		)
+
+class TournamentCreateAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def post(self, request):
+		
+		# Save the request params and check if there are any error
+		serializer = TournamentSerializer(data=request.data, context={'request': request})
+		if not serializer.is_valid():
+			return Response(
+					serializer.errors,
+					status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Save the tournament
+		try:
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		except Exception as e:
+			return Response(
+				{
+					'result': False,
+					'message': f'Error creating tournament: {str(e)}'
+				},
+				status=status.HTTP_400_BAD_REQUEST
+			)
