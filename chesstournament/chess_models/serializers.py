@@ -5,7 +5,10 @@ from .models import (
 	Game,
 	Tournament,
 	Round,
-	RankingSystemClass
+	RankingSystemClass,
+
+	TournamentBoardType,
+	TournamentPlayers
 )
 
 class RefereeSerializer(serializers.ModelSerializer):
@@ -51,9 +54,86 @@ class TournamentSerializer(serializers.ModelSerializer):
 		]
 	
 	def validate_name(self, value):
+		"""
+		Check that any tournament with the same name exist.
+		"""
 		if Tournament.objects.filter(name=value).exists():
 			raise serializers.ValidationError("Tournament with this name already exists.")
 		return value
+	
+	def validate(self, data):
+		board_type: str = data.get('board_type')
+		player_csv: str = data.get('players')
+		parsed_players = []
+
+		if not player_csv:
+			data['parsed_players'] = []
+			return data
+
+		# Divide the string into lines
+		lines = player_csv.strip().splitlines()
+		if not lines:
+			raise serializers.ValidationError("Invalid player CSV format")
+		if len(lines) < 2:
+			raise serializers.ValidationError("No usernames provided")
+		users_data = [line.strip() for line in lines[1:] if line.strip()]
+
+		
+		# Depending on the board, we stop the information in one way or another
+		if board_type == TournamentBoardType.LICHESS:
+			
+			# Check if all the users are registered on the database
+			found_players = Player.objects.filter(lichess_username__in=users_data)
+			if not found_players or found_players.count() != len(users_data):
+				raise serializers.ValidationError("No players found with the provided usernames")
+			
+			# Save the players
+			parsed_players = list(found_players)
+
+			
+		elif board_type == TournamentBoardType.OTB:
+			for row in users_data:
+				name, email = row.split(',')
+				name = name.strip()
+				email = email.strip()
+
+				player = Player.objects.filter(name=name, email=email).first()
+				if not player:
+					raise serializers.ValidationError(
+						f"Player with name '{name}' and email '{email}' not found"
+					)
+				
+				parsed_players.append(player)
+		else:
+			raise serializers.ValidationError("Invalid board type")
+
+		# Save the players
+		data['parsed_players'] = parsed_players
+		return data
+	
+	def create(self, validated_data):
+		# Get the players
+		parsed_players = validated_data.pop('parsed_players', [])
+		validated_data.pop('players', None)
+
+		# Get the ranking list
+		ranking_list = validated_data.pop('rankingList', [])
+
+		# Get the auth user
+		request = self.context.get('request')
+		auth_user = request.user if request else None
+
+		# Create the tournament
+		tournament = Tournament.objects.create(administrativeUser=auth_user, **validated_data)
+
+		# Add the ranking list
+		tournament.rankingList.set(ranking_list)
+
+		# Add the players
+		for player in parsed_players:
+			TournamentPlayers.objects.create(tournament=tournament, player=player)
+		
+		return tournament
 
 class RoundSerializer(serializers.ModelSerializer):	
 	class Meta:
