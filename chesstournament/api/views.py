@@ -212,3 +212,23 @@ class GetPlayers(APIView):
 			serializer.data,
 			status=status.HTTP_200_OK
 		)
+
+class GetRoundResults(APIView):
+	permission_classes = []
+
+	def get(self, request, tournament_id):
+		tournament = Tournament.objects.filter(id=tournament_id).first()
+		if not tournament:
+			return Response(
+				{
+					'result': False,
+					'message': 'Tournament not found'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		rounds = Round.objects.filter(tournament=tournament).all()
+		serializer = RoundSerializer(rounds, many=True)
+		return Response(
+			serializer.data,
+			status=status.HTTP_200_OK
+		)
