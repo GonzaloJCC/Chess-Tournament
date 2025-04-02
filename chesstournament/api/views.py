@@ -192,3 +192,23 @@ class TournamentCreateAPIView(APIView):
 				},
 				status=status.HTTP_400_BAD_REQUEST
 			)
+		
+class GetPlayers(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, tournament_id):
+		tournament = Tournament.objects.filter(id=tournament_id).first()
+		if not tournament:
+			return Response(
+				{
+					'result': False,
+					'message': 'Tournament not found'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		players = tournament.players.all()
+		serializer = PlayerSerializer(players, many=True)
+		return Response(
+			serializer.data,
+			status=status.HTTP_200_OK
+		)
