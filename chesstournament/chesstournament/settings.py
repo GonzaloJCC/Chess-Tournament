@@ -163,7 +163,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Djoser settings
 DJOSER = {
 	'USER_ID_FIELD': 'username',
-	'USER_VIEWSET': 'api.views.CustomUserViewSet',
 }
 
 # CORS
