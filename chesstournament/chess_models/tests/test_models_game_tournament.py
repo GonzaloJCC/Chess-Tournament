@@ -169,11 +169,11 @@ class TournamentModelTestExtension(TransactionTestCase):
         playersList = getScores(tournament)
         score = RankingSystem.PLAIN_SCORE
         for player, points in playersList.items():
-            print(player.name, points, flush=True)
+            # print(player.name, points, flush=True)
             self.assertEqual(points[score], results[player.name][0])
             # self.assertEqual(points['points_buchholt'],
             #                 results[player.name][1])
-
+        
     @tag("continua")
     def test_012_tournament_getScores(self):
         """Test function getPoints that returns a list of
@@ -625,7 +625,8 @@ class TournamentModelTestExtension(TransactionTestCase):
             self.assertEqual(playerV[blacktimes],
                              results[playerK.name][2])
         self.assertEqual(len(playersList), len(results))
-        tournament.removeFromRankingList(RankingSystem.BLACKTIMES.value)
+        # tournament.removeFromRankingList(RankingSystem.BLACKTIMES.value)
+        tournament.cleanRankingList()
         tournament.addToRankingList(RankingSystem.WINS.value)
         wins = RankingSystem.WINS
         for k, v in winsblackList.items():

@@ -9,7 +9,8 @@ class Round(models.Model):
 
     # Tournament reference
     tournament = models.ForeignKey(
-        to="chess_models.Tournament", null=False, blank=False, on_delete=models.CASCADE
+        to="chess_models.Tournament",
+        null=False, blank=False, on_delete=models.CASCADE
     )
 
     # Round start date and hour. Can be null

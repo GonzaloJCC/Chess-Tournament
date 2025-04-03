@@ -20,10 +20,14 @@ class RankingSystemClass(models.Model):
 
 class Tournament(models.Model):
     # Tournament name. Can be null or blank, and must be unique
-    name = models.CharField(max_length=128, null=True, blank=True, unique=True)
+    name = models.CharField(
+        max_length=128, null=True, blank=True, unique=True
+    )
 
     # Admin user reference. Can be null
-    administrativeUser = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE)
+    administrativeUser = models.ForeignKey(
+        to=User, null=True, on_delete=models.CASCADE
+    )
 
     # Players references
     players = models.ManyToManyField(
@@ -31,7 +35,9 @@ class Tournament(models.Model):
     )  # null=True has no effects
 
     # Referee reference
-    referee = models.ForeignKey(to=Referee, null=True, on_delete=models.CASCADE)
+    referee = models.ForeignKey(
+        to=Referee, null=True, on_delete=models.CASCADE
+    )
 
     # Start date
     start_date = models.DateField(auto_now=True, null=True)
@@ -46,13 +52,19 @@ class Tournament(models.Model):
     only_administrative = models.BooleanField(default=False)
 
     # Tournament type, options of TournamentType
-    tournament_type = models.CharField(choices=TournamentType.choices, max_length=2)
+    tournament_type = models.CharField(
+        choices=TournamentType.choices, max_length=2
+    )
 
     # Tournament speed, options of TournamentSpeed
-    tournament_speed = models.CharField(choices=TournamentSpeed.choices, max_length=2)
+    tournament_speed = models.CharField(
+        choices=TournamentSpeed.choices, max_length=2
+    )
 
     # Tournament board type, options by TournamentBoardType
-    board_type = models.CharField(choices=TournamentBoardType.choices, max_length=3)
+    board_type = models.CharField(
+        choices=TournamentBoardType.choices, max_length=3
+    )
 
     # Points got by win
     win_points = models.FloatField(default=1.0)
@@ -69,7 +81,8 @@ class Tournament(models.Model):
     # Number of rounds for swiss
     number_of_rounds_for_swiss = models.IntegerField(default=0)
 
-    # List of classification system, associated with a tournament through the tournament ranking system
+    # List of classification system,
+    # associated with a tournament through the tournament ranking system
     rankingList = models.ManyToManyField(
         to=RankingSystemClass, blank=True
     )  # null=True has no effects
@@ -79,7 +92,8 @@ class Tournament(models.Model):
 
     def xd(self, players, rating_attr):
         return sorted(
-            players, key=lambda player: getattr(player, rating_attr, 0), reverse=True
+            players, key=lambda player: getattr(player, rating_attr, 0),
+            reverse=True
         )
 
     def getPlayers(self, sorted=False):
@@ -117,7 +131,9 @@ class Tournament(models.Model):
         self.rankingList.clear()
 
     def addToRankingList(self, rankingSystem):
-        createdRankingSystem = RankingSystemClass.objects.create(value=rankingSystem)
+        createdRankingSystem = RankingSystemClass.objects.create(
+            value=rankingSystem
+        )
         self.rankingList.add(createdRankingSystem)
 
     def getRoundCount(self):
@@ -250,9 +266,6 @@ def getScores(tournament: Tournament):
     # Get the players
     players = tournament.getPlayers()
 
-    # Get the methods to check
-    rankingList = tournament.rankingList.all()
-
     for player in players:
         result_dict[player] = {}
 
@@ -277,20 +290,15 @@ def getBlackWins(tournament, results):  # NOTE: works
 
 
 def getRanking(tournament):
-    # Initizalize WINS and BLACKTIMES
-    WINS = RankingSystem.WINS.value
-    BLACKTIMES = RankingSystem.BLACKTIMES.value
+
     PLAIN = RankingSystem.PLAIN_SCORE.value
 
     return_dict = {}
 
     return_dict = getBlackWins(tournament, getScores(tournament))
 
-    in_order = sorted(
-        return_dict, key=lambda player: return_dict[player][PLAIN], reverse=True
-    )  # this is a list
-
-    # Now players are ordered unless there is a tie, so we must see the rankingList
+    # Now players are ordered unless there is a tie,
+    # so we must see the rankingList
     # Get the methods to check
     rankingList = tournament.rankingList.all()
 
@@ -322,7 +330,8 @@ def getRanking(tournament):
             for criterion in rankingList:
                 # Sort based on the given criterion
                 players.sort(
-                    key=lambda player: return_dict[player].get(criterion.value, 0),
+                    key=lambda player:
+                    return_dict[player].get(criterion.value, 0),
                     reverse=True,
                 )
             # After sorting, assign ranks to players within this group

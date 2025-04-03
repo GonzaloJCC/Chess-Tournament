@@ -8,7 +8,8 @@ from .other_models import LichessAPIError
 import requests
 
 
-# swissByes not needed, implements ROUNDROBIN case with an even number of players
+# swissByes not needed,
+# implements ROUNDROBIN case with an even number of players
 def create_rounds(tournament: Tournament, swissByes=[]):
     # Get the players and their ids
     players = tournament.players.all()
@@ -55,7 +56,8 @@ class Game(models.Model):
     # Date and time of the last update
     update_date = models.DateTimeField(auto_now=True)
 
-    # The result of the match, the possible values are defined in Scores.choices
+    # The result of the match,
+    # the possible values are defined in Scores.choices
     result = models.CharField(default=Scores.NOAVAILABLE, max_length=1)
 
     # The ranking order of the game, can be null
@@ -68,7 +70,9 @@ class Game(models.Model):
 
         if response.status_code != 200:
             # Handle unsuccessful response
-            raise LichessAPIError(f"Error fetching game data: {response.status_code}")
+            raise LichessAPIError(
+                f"Error fetching game data: {response.status_code}"
+            )
 
         data = response.json()
 
@@ -76,13 +80,15 @@ class Game(models.Model):
         white_player = data["players"]["white"]["userId"]
         if white_player != self.white.lichess_username:
             raise LichessAPIError(
-                f"The player {self.white.lichess_username} is not {white_player}"
+                f"The player {self.white.lichess_username}"
+                f" is not {white_player}"
             )
 
         black_player = data["players"]["black"]["userId"]
         if black_player != self.black.lichess_username:
             raise LichessAPIError(
-                f"The player {self.black.lichess_username} is not {black_player}"
+                f"The player {self.black.lichess_username}"
+                f" is not {black_player}"
             )
 
         if data.get("winner") is not None:

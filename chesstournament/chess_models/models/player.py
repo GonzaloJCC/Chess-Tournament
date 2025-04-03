@@ -4,7 +4,6 @@ from .other_models import LichessAPIError
 
 
 class Player(models.Model):
-
     #############################
     # NOTE: General information #
     #############################
@@ -18,20 +17,24 @@ class Player(models.Model):
     # Player's email address. Can be null or blank
     email = models.EmailField(null=True, blank=True)
 
-    # Player's country code (according to ISO 3166-1 standard). Can be null or blank
+    # Player's country code (according to ISO 3166-1 standard).
+    # Can be null or blank
     country = models.CharField(max_length=2, null=True, blank=True)
 
-    # Date the player was created in the system. Automatically assigned when the player is created
+    # Date the player was created in the system.
+    #  Automatically assigned when the player is created
     creation_date = models.DateTimeField(auto_now_add=True)
 
-    # Date the player's data was last updated. Automatically updated whenever the player is modified
+    # Date the player's data was last updated.
+    # Automatically updated whenever the player is modified
     update_date = models.DateTimeField(auto_now=True)
 
     #################
     # NOTE: lichess #
     #################
 
-    # Player's username on the Lichess platform. Must be unique and can be null or empty
+    # Player's username on the Lichess platform.
+    # Must be unique and can be null or empty
     lichess_username = models.CharField(
         max_length=150, unique=True, null=True, blank=True
     )
@@ -69,7 +72,8 @@ class Player(models.Model):
     ##############
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["name", "email"], name="unique_name_email")
+            models.UniqueConstraint(
+                fields=["name", "email"], name="unique_name_email")
         ]
 
     def __str__(self):
@@ -84,14 +88,14 @@ class Player(models.Model):
             Player.objects.filter(
                 (models.Q(id=self.id) & ~models.Q(id=None))
                 | (
-                    models.Q(lichess_username=self.lichess_username)
-                    & ~models.Q(lichess_username=None)
+                        models.Q(lichess_username=self.lichess_username)
+                        & ~models.Q(lichess_username=None)
                 )
                 | (models.Q(fide_id=self.fide_id) & ~models.Q(fide_id=None))
                 | (
-                    models.Q(name=self.name, email=self.email)
-                    & ~models.Q(name=None)
-                    & ~models.Q(email=None)
+                        models.Q(name=self.name, email=self.email)
+                        & ~models.Q(name=None)
+                        & ~models.Q(email=None)
                 )
             )
             .exclude(pk=self.pk)
@@ -122,11 +126,8 @@ class Player(models.Model):
             return False
 
         # Make the request
-        response = requests.get(f"https://lichess.org/api/user/{self.lichess_username}")
-
-        # if response.status_code != 200:
-        # 	raise LichessAPIError(f"Error fetching user data: {response.status_code}")
-        # return True
+        response = requests.get(
+            f"https://lichess.org/api/user/{self.lichess_username}")
 
         return response.status_code == 200
 
@@ -134,10 +135,13 @@ class Player(models.Model):
         if self.lichess_username is None:
             return
 
-        response = requests.get(f"https://lichess.org/api/user/{self.lichess_username}")
+        response = requests.get(
+            f"https://lichess.org/api/user/{self.lichess_username}")
         if response.status_code != 200:
             raise LichessAPIError(
-                f"Error fetching user '{self.lichess_username}' data: {response.status_code}"
+                f"Error fetching user "
+                f"'{self.lichess_username}'"
+                f" data: {response.status_code}"
             )
         data = response.json()
         if data.get("perfs") is None:
