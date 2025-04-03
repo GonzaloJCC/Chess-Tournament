@@ -15,7 +15,8 @@ from chess_models.models import (
 	Tournament,
 	Round,
 
-	create_rounds
+	create_rounds,
+	LichessAPIError
 )
 from chess_models.serializers import (
 	RefereeSerializer,
@@ -231,4 +232,63 @@ class GetRoundResults(APIView):
 		return Response(
 			serializer.data,
 			status=status.HTTP_200_OK
+		)
+
+class UpdateLichessGameAPIView(APIView):
+	permission_classes = []
+	authentication_classes = []
+
+	def post(self, request):
+		# Get the game
+		game_id = request.data.get('game_id')
+		if not game_id:
+			return Response(
+				{
+					'result': False,
+					'message': 'game_id is required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		game = Game.objects.filter(id=game_id).first()
+		if not game:
+			return Response(
+				{
+					'result': False,
+					'message': 'Game does not exist'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		if game.finished is True:
+			return Response(
+				{
+					'result': False,
+					'message': 'Game is blocked, only administrator can update it'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Get the lichess game id
+		lichess_game_id = request.data.get('lichess_game_id')
+		if not lichess_game_id:
+			return Response(
+				{
+					'result': False,
+					'message': 'lichess_game_id is required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		try:
+			game_result, _, _ = game.get_lichess_game_result(lichess_game_id)
+		except LichessAPIError as e:
+			return Response(
+				{
+					'result': False,
+					'message': str(e)
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+
+		game.result = game_result
+		game.finished = True
+		game.save()
+		return Response(
+			{
+				'result': True,
+			}, status=status.HTTP_200_OK
 		)
