@@ -16,7 +16,8 @@ from chess_models.models import (
 	Round,
 
 	create_rounds,
-	LichessAPIError
+	LichessAPIError,
+	Scores
 )
 from chess_models.serializers import (
 	RefereeSerializer,
@@ -147,6 +148,7 @@ class CreateRoundAPIView(APIView):
 	
 class SearchTournamentsAPIView(APIView):
 	permission_classes = []
+	authentication_classes = []
 
 	def post(self, request):
 		search_string = request.data.get('search_string')
@@ -216,6 +218,7 @@ class GetPlayers(APIView):
 
 class GetRoundResults(APIView):
 	permission_classes = []
+	authentication_classes = []
 
 	def get(self, request, tournament_id):
 		tournament = Tournament.objects.filter(id=tournament_id).first()
@@ -290,5 +293,71 @@ class UpdateLichessGameAPIView(APIView):
 		return Response(
 			{
 				'result': True,
+			}, status=status.HTTP_200_OK
+		)
+	
+class UpdateOTBGameAPIView(APIView):
+	permission_classes = []
+	authentication_classes = []
+
+	def post(self, request):
+		# Get the params
+		game_id = request.data.get('game_id')
+		otb_result = request.data.get('otb_result')
+		email = request.data.get('email')
+		if None in [game_id, otb_result, email]:
+			return Response(
+				{
+					'result': False,
+					'message': 'game_id, otb_result and email are required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Parse the result
+		try:
+			otb_result = Scores(otb_result)
+		except ValueError:
+			return Response(
+				{
+					'result': False,
+					'message': 'Invalid otb_result'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Search the game
+		game = Game.objects.filter(id=game_id).first()
+		if not game:
+			return Response(
+				{
+					'result': False,
+					'message': 'Game does not exist'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		if game.finished:
+			return Response(
+				{
+					'result': False,
+					'message': 'Game is blocked, only administrator can update it'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Check if the email is valid
+		player = Player.objects.filter(email=email).first()
+		if not player:
+			return Response(
+				{
+					'result': False,
+					'message': 'Player does not exist'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+
+		# Update the game
+		game.result = otb_result
+		game.finished = True
+		game.save()
+		return Response(
+			{
+				'result': True,
+				'message': "Game updated by player"
 			}, status=status.HTTP_200_OK
 		)

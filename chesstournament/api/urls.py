@@ -15,7 +15,7 @@ from .views import (
 	GetPlayers,
 	GetRoundResults,
 	UpdateLichessGameAPIView,
-	# UpdateOTBGameAPIView,
+	UpdateOTBGameAPIView,
 	# AdminUpdateGameAPIView,
 )
 
@@ -41,6 +41,6 @@ urlpatterns = [
 	path('get_players/<int:tournament_id>', GetPlayers.as_view(), name='get-players'),
 	path('get_round_results/<int:tournament_id>', GetRoundResults.as_view(), name='get-round-results'),
 	path('update_lichess_game', UpdateLichessGameAPIView.as_view(), name='update-lichess-game'),
-	# path('update_otb_game', UpdateOTBGameAPIView.as_view(), name='update-otb-game'),
+	path('update_otb_game', UpdateOTBGameAPIView.as_view(), name='update-otb-game'),
 	# path('admin_update_game', AdminUpdateGameAPIView.as_view(), name='admin-update-game'),
 ]
