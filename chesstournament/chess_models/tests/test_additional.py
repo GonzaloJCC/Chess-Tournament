@@ -12,19 +12,6 @@ from chess_models.models.constants import (
     TournamentBoardType,
 )
 
-def generic_tournament_creation(count: int) -> Tournament:
-    tournament = Tournament.objects.create(
-        name=f"Test Tournament {count}",
-    )
-
-    for i in range(count):
-        player = Player.objects.create(
-            name=f"Player {i}"
-        )
-        tournament.players.add(player)
-
-    return tournament
-
 class ExtraTests(TestCase):
 
     @tag("continua")
@@ -141,18 +128,46 @@ class ExtraTests(TestCase):
         self.assertEqual(wins, 0)
         self.assertEqual(black_games, 0)
 
+class CreateRoundTests(TestCase):
+
+    @classmethod
+    def setUpTestData(self):
+        # Create the people
+        players = []
+        count = 1
+        for i in range(14):
+            player = Player.objects.create(
+                name=f"Player {count}"
+            )
+            count += 1
+            players.append(player)
+
+        # Create the tournaments
+        self.tournaments = []
+        for i in range(6):
+            tournament = Tournament.objects.create(
+                name=f"Test Tournament {i}",
+            )
+
+            max_players = i*2+4
+            for player in players:
+                if player.id > max_players:
+                    break
+                tournament.players.add(player)
+
+            tournament.save()
+            self.tournaments.append(tournament)
+
     @tag("continua")
     def test_001_create_round_4(self):
         """Test the creation of a round with 4 players"""
-        
         result = [
             [[1,4],[2,3]],
             [[4,3],[1,2]],
             [[2,4],[3,1]]
         ]
         
-        tournament = generic_tournament_creation(4)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[0])
         self.assertEqual(create_round, result)
 
     @tag("continua")
@@ -167,8 +182,7 @@ class ExtraTests(TestCase):
             [[3,6], [4,2], [5,1]]
         ]
         
-        tournament = generic_tournament_creation(6)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[1])
         self.assertEqual(create_round, result)
 
     @tag("continua")
@@ -185,8 +199,7 @@ class ExtraTests(TestCase):
             [[4,8], [5,3], [6,2], [7,1]]
         ]
         
-        tournament = generic_tournament_creation(8)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[2])
         self.assertEqual(create_round, result)
 
     @tag("continua")
@@ -205,8 +218,7 @@ class ExtraTests(TestCase):
             [[5,10], [6,4], [7,3], [8,2], [9,1]]
         ]
         
-        tournament = generic_tournament_creation(10)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[3])
         self.assertEqual(create_round,result)
 
     @tag("continua")
@@ -227,8 +239,7 @@ class ExtraTests(TestCase):
             [[6,12], [7,5], [8,4], [9,3], [10,2], [11,1]]
         ]
         
-        tournament = generic_tournament_creation(12)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[4])
         self.assertEqual(create_round,result)
 
     @tag("continua")
@@ -251,8 +262,7 @@ class ExtraTests(TestCase):
             [[7,14], [8,6], [9,5], [10,4], [11,3], [12,2], [13,1]]
         ]
 
-        tournament = generic_tournament_creation(14)
-        create_round = create_rounds(tournament)
+        create_round = create_rounds(self.tournaments[5])
         self.assertEqual(create_round,result)
 
 
