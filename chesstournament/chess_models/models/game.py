@@ -113,32 +113,42 @@ class Game(models.Model):
         if response.status_code != 200:
             # Handle unsuccessful response
             raise LichessAPIError(
-                f"Error fetching game data: {response.status_code}"
+                'Failed to fetch data for game'
             )
 
         data = response.json()
 
         # Fixing the inconsistent quotes
-        white_player = data["players"]["white"]["userId"]
-        if white_player != self.white.lichess_username:
+        white_player = data["players"]["white"]["userId"].lower()
+        black_player = data["players"]["black"]["userId"].lower()
+        
+
+        white_correct = self.white.lichess_username.lower()
+        black_correct = self.black.lichess_username.lower()
+
+        if white_correct != white_player or black_correct != black_player:
             raise LichessAPIError(
-                f"The player {self.white.lichess_username}"
-                f" is not {white_player}"
+                f"Players for game {game_id} are different"
             )
 
-        black_player = data["players"]["black"]["userId"]
-        if black_player != self.black.lichess_username:
-            raise LichessAPIError(
-                f"The player {self.black.lichess_username}"
-                f" is not {black_player}"
-            )
+        # if white_player != white_correct:
+        #     raise LichessAPIError(
+        #         f"The player {self.white.lichess_username}"
+        #         f" is not {white_player}"
+        #     )
+
+        # if black_player != black_correct:
+        #     raise LichessAPIError(
+        #         f"The player {self.black.lichess_username}"
+        #         f" is not {black_player}"
+        #     )
 
         if data.get("winner") is not None:
             if data["winner"] == "white":
                 game_result = Scores.WHITE
             elif data["winner"] == "black":
                 game_result = Scores.BLACK
-        elif data["status"] == "draw":
+        else:
             game_result = Scores.DRAW
 
         return game_result, white_player, black_player
