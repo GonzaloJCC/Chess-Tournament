@@ -206,6 +206,7 @@ class TournamentPlayers(models.Model):
 
     class Meta:
         unique_together = ("tournament", "player")
+        ordering = ['id']
 
 
 def get_wins(
