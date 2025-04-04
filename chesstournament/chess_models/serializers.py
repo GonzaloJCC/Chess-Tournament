@@ -66,7 +66,7 @@ class TournamentSerializer(serializers.ModelSerializer):
 		player_csv: str = data.get('players')
 		parsed_players = []
 
-		if not player_csv:
+		if not player_csv or len(player_csv.split()) == 0:
 			data['parsed_players'] = []
 			return data
 
@@ -134,6 +134,23 @@ class TournamentSerializer(serializers.ModelSerializer):
 			TournamentPlayers.objects.create(tournament=tournament, player=player)
 		
 		return tournament
+	
+	def to_representation(self, instance):
+		# res = super().to_representation(instance)
+		res = {}
+		res['id'] = instance.id
+		res['name'] = instance.name
+		res['start_date'] = instance.start_date
+
+		rankingList = instance.rankingList.all()
+		res['rankingList'] = []
+		for ranking in rankingList:
+			res['rankingList'].append(ranking.value)
+
+		# res['rankingList'] = instance.rankingList.all()
+		res['board_type'] = instance.board_type
+		res['tournament_type'] = instance.tournament_type
+		return res
 
 class RoundSerializer(serializers.ModelSerializer):	
 	class Meta:
