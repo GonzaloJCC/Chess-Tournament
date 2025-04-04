@@ -13,6 +13,10 @@ import requests
 def create_rounds(tournament: Tournament, swissByes=[]):
     # Get the players and their ids
     players = tournament.players.all()
+
+    # Check the players count
+    if len(players) < 2 and len(players) % 2 != 0:
+        return []
     players_ids = sorted([player.id for player in players])
 
     # Select the omve and fixed players
@@ -22,7 +26,7 @@ def create_rounds(tournament: Tournament, swissByes=[]):
     # Iterate, creating duels
     rounds = []
     for i in range(len(players_ids) - 1):
-        duels = [fixed_player, moved_players[0]]
+        duels = [(fixed_player, moved_players[0])]
         for j in range(1, len(moved_players) // 2 + 1):
             duels.append((fixed_player, moved_players[-j]))
         rounds.append(duels)

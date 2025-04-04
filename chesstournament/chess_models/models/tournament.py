@@ -90,6 +90,14 @@ class Tournament(models.Model):
     def __str__(self):
         return f"tournament_{self.id:02d}"
 
+    def getGames(self):
+      games = []
+      for round in self.round_set.all():
+        for game in round.game_set.all():
+          games.append(game)
+
+      return games
+      
     def xd(self, players, rating_attr):
         return sorted(
             players, key=lambda player: getattr(player, rating_attr, 0),
@@ -181,7 +189,6 @@ class Tournament(models.Model):
                     last_round = round
 
         return last_round
-
 
 class TournamentPlayers(models.Model):
     # Tournament id

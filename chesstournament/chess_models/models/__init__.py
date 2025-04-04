@@ -6,6 +6,6 @@
 from .constants import *
 from .player import Player # noqa F104
 from .other_models import Referee, LichessAPIError
-from .tournament import Tournament, RankingSystemClass, getScores, getBlackWins, getRanking, get_wins
+from .tournament import Tournament, TournamentPlayers, RankingSystemClass, getScores, getBlackWins, getRanking, get_wins
 from .round import Round
 from .game import Game, create_rounds
