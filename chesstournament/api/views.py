@@ -139,30 +139,6 @@ class CreateRoundAPIView(APIView):
 				}, status=status.HTTP_400_BAD_REQUEST
 			)
 		
-		# Insert the rounds
-		round_count = 0
-		for round_data in rounds:
-			round_count += 1
-
-			# Create the round
-			round = Round.objects.create(
-				name=f'Round {round_count}',
-				tournament=tournament
-			)
-
-			# Insert the games on the round
-			for game_data in round_data:
-				# Create the game
-				game = Game.objects.create(
-					white=Player.objects.get(id=game_data[0]),
-					black=Player.objects.get(id=game_data[1]),
-					round=round
-				)
-				game.save()
-
-			# Save the round
-			round.save()
-		
 		# Return a corerct response
 		return Response(
 			{'result': True},
