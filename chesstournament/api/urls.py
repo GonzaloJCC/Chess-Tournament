@@ -16,7 +16,7 @@ from .views import (
 	GetRoundResults,
 	UpdateLichessGameAPIView,
 	UpdateOTBGameAPIView,
-	# AdminUpdateGameAPIView,
+	AdminUpdateGameAPIView,
 )
 
 # Define the router and register the viewsets
@@ -42,5 +42,5 @@ urlpatterns = [
 	path('get_round_results/<int:tournament_id>', GetRoundResults.as_view(), name='get-round-results'),
 	path('update_lichess_game', UpdateLichessGameAPIView.as_view(), name='update-lichess-game'),
 	path('update_otb_game', UpdateOTBGameAPIView.as_view(), name='update-otb-game'),
-	# path('admin_update_game', AdminUpdateGameAPIView.as_view(), name='admin-update-game'),
+	path('admin_update_game', AdminUpdateGameAPIView.as_view(), name='admin-update-game'),
 ]

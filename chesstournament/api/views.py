@@ -361,3 +361,58 @@ class UpdateOTBGameAPIView(APIView):
 				'message': "Game updated by player"
 			}, status=status.HTTP_200_OK
 		)
+	
+class AdminUpdateGameAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def post(self, request):
+		game_id = request.data.get('game_id')
+		otb_result = request.data.get('otb_result')
+
+		if None in [game_id, otb_result]:
+			return Response(
+				{
+					'result': False,
+					'message': 'game_id and otb_result are required'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		# Parse the result and search the game
+		try:
+			otb_result = Scores(otb_result)
+		except ValueError:
+			return Response(
+				{
+					'result': False,
+					'message': 'Invalid otb_result'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+
+		game = Game.objects.filter(id=game_id).first()
+		if not game:
+			return Response(
+				{
+					'result': False,
+					'message': 'Game does not exist'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+
+		# Check if the user is an administrative user
+		if not request.user.is_staff:
+			return Response(
+				{
+					'result': False,
+					'message': 'Only administrative users can update the game'
+				}, status=status.HTTP_403_FORBIDDEN
+			)
+		
+		# Update the game
+		game.result = otb_result
+		game.finished = True
+		game.save()
+		return Response(
+			{
+				'result': True,
+				'message': "Game updated by administrator"
+			}, status=status.HTTP_200_OK
+		)
