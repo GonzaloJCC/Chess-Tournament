@@ -7,33 +7,71 @@ from .other_models import LichessAPIError
 
 import requests
 
-
 # swissByes not needed,
 # implements ROUNDROBIN case with an even number of players
 def create_rounds(tournament: Tournament, swissByes=[]):
-    # Get the players and their ids
     players = tournament.players.all()
+    players_count = len(players)
 
-    # Check the players count
-    if len(players) < 2 and len(players) % 2 != 0:
+    if players_count % 2 != 0 or players_count < 2:
         return []
-    players_ids = sorted([player.id for player in players])
 
-    # Select the omve and fixed players
-    fixed_player = players_ids[-1]
-    moved_players = players_ids[:-1]
+    players_id = sorted([player.id for player in players])
+    fixed = players_id[-1]
+    others = players_id[:-1]
 
-    # Iterate, creating duels
-    rounds = []
-    for i in range(len(players_ids) - 1):
-        duels = [(fixed_player, moved_players[0])]
-        for j in range(1, len(moved_players) // 2 + 1):
-            duels.append((fixed_player, moved_players[-j]))
-        rounds.append(duels)
-        moved_players = [moved_players[-1]] + moved_players[:-1]
+    schedule = []
+    num_rounds = players_count - 1
+    rot = players_count // 2 - 1
 
-    # Return the list of the created rounds
-    return rounds
+    for r in range(num_rounds):
+        round = []
+
+        # Save the fixed player. Check if he is white ot black
+        if r % 2 == 0:
+            first_pair = [others[0], fixed]
+        else:
+            first_pair = [fixed, others[0]]
+        round.append(first_pair)
+        
+        # Rest of players
+        L = others[1:]
+        m = len(L)
+        for i in range(m // 2):
+            pair = [L[i], L[-(i + 1)]]
+            round.append(pair)
+        schedule.append(round)
+        
+        # Rote the positions
+        rot_amt = rot % len(others)
+        others = others[-rot_amt:] + others[:-rot_amt]
+
+    # Create the rounds
+    round_count = 0
+    for round_data in schedule:
+        round_count += 1
+
+        # Create the round
+        round = Round.objects.create(
+            name=f'Round {round_count}',
+            tournament=tournament
+        )
+
+        # Insert the games on the round
+        for game_data in round_data:
+            # Create the game
+            game = Game.objects.create(
+                white=Player.objects.get(id=game_data[0]),
+                black=Player.objects.get(id=game_data[1]),
+                round=round
+            )
+            game.save()
+
+        # Save the round
+        round.save()
+
+    # Return the data
+    return schedule
 
 
 class Game(models.Model):
