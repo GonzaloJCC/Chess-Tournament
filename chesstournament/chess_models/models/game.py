@@ -1,7 +1,7 @@
 from django.db import models
 from .player import Player
 from .round import Round
-from .constants import Scores
+from .constants import Scores, ScoresFromValue
 from .tournament import Tournament
 from .other_models import LichessAPIError
 
@@ -102,6 +102,16 @@ class Game(models.Model):
         return game_result, white_player, black_player
 
     def __str__(self):
-        white_data = f"{str(self.white)}({self.white.id})"
-        black_data = f"{str(self.black)}({self.black.id})"
-        return f"{white_data} vs {black_data} = {self.result.label}"
+        if self.white is None:
+            white_data = "BYE"
+        else:
+            white_data = f"{str(self.white)}({self.white.id})"
+            
+        if self.black is None:
+            black_data = "BYE"
+        else:
+            black_data = f"{str(self.black)}({self.black.id})"
+
+        x = ScoresFromValue.get(self.result, "NOT_DEFINED")
+     
+        return f"{white_data} vs {black_data} = {x}"

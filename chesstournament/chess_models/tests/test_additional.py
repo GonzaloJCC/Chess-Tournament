@@ -212,3 +212,44 @@ class TournamentModelTestExtension(TransactionTestCase):
             sorted(lichess_ratings, reverse=False),
             "Los jugadores Lichess no están ordenados correctamente",
         )
+
+    @tag("continua")
+    def test_str_game_with_bye(self):
+        tournament = Tournament.objects.create(
+            name="Test Tournament", win_points=1,
+            draw_points=0.5, lose_points=0
+        )
+        round1 = Round.objects.create(name="Round 1", tournament=tournament)
+
+        player1 = Player.objects.create(lichess_username="luizz04")
+
+        game = Game.objects.create(
+            white=player1,
+            black=None,
+            round=round1,
+            finished=True,
+            result=Scores.WHITE,
+        )
+        expected_str = f"{str(player1)}({player1.id}) vs BYE = White"
+        self.assertEqual(str(game), expected_str)
+
+    @tag("continua")
+    def test_str_game_with_bye2(self):
+        tournament = Tournament.objects.create(
+            name="Test Tournament", win_points=1,
+            draw_points=0.5, lose_points=0
+        )
+        round1 = Round.objects.create(name="Round 1", tournament=tournament)
+
+        player1 = Player.objects.create(lichess_username="luizz04")
+
+        game = Game.objects.create(
+            white=None,
+            black=player1,
+            round=round1,
+            finished=True,
+            result=Scores.WHITE,
+        )
+        expected_str = f"BYE vs {str(player1)}({player1.id}) = White"
+        self.assertEqual(str(game), expected_str)
+
