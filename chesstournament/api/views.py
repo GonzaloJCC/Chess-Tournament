@@ -16,6 +16,7 @@ from chess_models.models import (
 	Round,
 
 	create_rounds,
+	getRanking,
 	LichessAPIError,
 	Scores
 )
@@ -31,7 +32,7 @@ from chess_models.serializers import (
 # NOTE: Pagination class #
 ##########################
 
-class TournamnetPagination(PageNumberPagination):
+class CustomPagination(PageNumberPagination):
 	page_size = 10
 	page_size_query_param = 'page_size'
 	max_page_size = 100
@@ -70,7 +71,7 @@ class GameViewSet(ModelViewSet):
 class TournamentViewSet(ModelViewSet):
 	queryset = Tournament.objects.all()
 	serializer_class = TournamentSerializer
-	pagination_class = TournamnetPagination
+	pagination_class = CustomPagination
 
 	# Redefined the permissions of the list set
 	def get_permissions(self):
@@ -138,7 +139,29 @@ class CreateRoundAPIView(APIView):
 				}, status=status.HTTP_400_BAD_REQUEST
 			)
 		
-		# TODO: Insert the rounds
+		# Insert the rounds
+		round_count = 0
+		for round_data in rounds:
+			round_count += 1
+
+			# Create the round
+			round = Round.objects.create(
+				name=f'Round {round_count}',
+				tournament=tournament
+			)
+
+			# Insert the games on the round
+			for game_data in round_data:
+				# Create the game
+				game = Game.objects.create(
+					white=Player.objects.get(id=game_data[0]),
+					black=Player.objects.get(id=game_data[1]),
+					round=round
+				)
+				game.save()
+
+			# Save the round
+			round.save()
 		
 		# Return a corerct response
 		return Response(
@@ -195,7 +218,53 @@ class TournamentCreateAPIView(APIView):
 				},
 				status=status.HTTP_400_BAD_REQUEST
 			)
+
+class GetRanking(APIView):
+	permission_classes = []
+	authentication_classes = []
+
+	def get(self, request, tournament_id):
+		tournament = Tournament.objects.filter(id=tournament_id).first()
+		if not tournament:
+			return Response(
+				{
+					'result': False,
+					'message': 'Error: tournament not found'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
 		
+		ranking = getRanking(tournament)
+		if not ranking:
+			return Response(
+				{
+					'result': False,
+					'message': 'Error while getting the ranking'
+				}, status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		result = {}
+		count = 0
+		for player, data in ranking.items():
+			count += 1
+			current = str(count)
+
+			result[current] = {}
+			result[current]['id'] = player.id
+			result[current]['name'] = player.lichess_username if player.lichess_username else player.name
+			result[current]['score'] = data['PS']
+			result[current]['rank'] = data['rank']
+
+			if 'WI' in data:
+				result[current]['WI'] = data['WI']
+			
+			if 'BT' in data:
+				result[current]['BT'] = data['BT']
+
+		return Response(
+			result,
+			status=status.HTTP_200_OK
+		)
+
 class GetPlayers(APIView):
 	permission_classes = [IsAuthenticated]
 
