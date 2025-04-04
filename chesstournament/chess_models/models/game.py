@@ -24,7 +24,7 @@ def create_rounds(tournament: Tournament, swissByes=[]):
     # Iterate, creating duels
     rounds = []
     for i in range(len(players_ids) - 1):
-        duels = [fixed_player, moved_players[0]]
+        duels = [(fixed_player, moved_players[0])]
         for j in range(1, len(moved_players) // 2 + 1):
             duels.append((fixed_player, moved_players[-j]))
         rounds.append(duels)
