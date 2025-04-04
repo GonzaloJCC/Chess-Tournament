@@ -98,7 +98,7 @@ class Tournament(models.Model):
 
       return games
       
-    def xd(self, players, rating_attr):
+    def sort_players(self, players, rating_attr):
         return sorted(
             players, key=lambda player: getattr(player, rating_attr, 0),
             reverse=True
@@ -130,7 +130,7 @@ class Tournament(models.Model):
             rating_attr = f"fide_rating_{rating_type}"
 
         # Sort players by the classification
-        return self.xd(players, rating_attr)
+        return self.sort_players(players, rating_attr)
 
     def getPlayersCount(self):
         return self.players.all().count()

@@ -88,7 +88,7 @@ class ExtraTests(TestCase):
     @tag("continua")
     def test_print_error(self):
         x = LichessAPIError(".")
-        print(x)
+        self.assertIn(str(x), '.')
 
     @tag("continua")
     def test_bye(self):
