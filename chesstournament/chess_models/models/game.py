@@ -106,12 +106,12 @@ class Game(models.Model):
             white_data = "BYE"
         else:
             white_data = f"{str(self.white)}({self.white.id})"
-            
+
         if self.black is None:
             black_data = "BYE"
         else:
             black_data = f"{str(self.black)}({self.black.id})"
 
         x = ScoresFromValue.get(self.result, "NOT_DEFINED")
-     
+
         return f"{white_data} vs {black_data} = {x}"
