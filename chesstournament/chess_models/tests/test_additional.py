@@ -4,13 +4,26 @@ from chess_models.models import (
     LichessAPIError,
     Scores,
     TournamentType,
-    get_wins
+    get_wins,
+    create_rounds
 )
 from chess_models.models.constants import (
     TournamentSpeed,
     TournamentBoardType,
 )
 
+def generic_tournament_creation(count: int) -> Tournament:
+    tournament = Tournament.objects.create(
+        name=f"Test Tournament {count}",
+    )
+
+    for i in range(count):
+        player = Player.objects.create(
+            name=f"Player {i}"
+        )
+        tournament.players.add(player)
+
+    return tournament
 
 class ExtraTests(TestCase):
 
@@ -127,6 +140,120 @@ class ExtraTests(TestCase):
         self.assertEqual(points, 1.5)  # 0.5 + 1 + 0
         self.assertEqual(wins, 0)
         self.assertEqual(black_games, 0)
+
+    @tag("continua")
+    def test_001_create_round_4(self):
+        """Test the creation of a round with 4 players"""
+        
+        result = [
+            [[1,4],[2,3]],
+            [[4,3],[1,2]],
+            [[2,4],[3,1]]
+        ]
+        
+        tournament = generic_tournament_creation(4)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round, result)
+
+    @tag("continua")
+    def test_002_create_round_6(self):
+        """Test the creation of a round with 6 players"""
+        
+        result = [
+            [[1,6],[2,5],[3,4]],
+            [[6,4],[5,3],[1,2]],
+            [[2,6],[3,1],[4,5]],
+            [[6,5], [1,4], [2,3]],
+            [[3,6], [4,2], [5,1]]
+        ]
+        
+        tournament = generic_tournament_creation(6)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round, result)
+
+    @tag("continua")
+    def test_003_create_round_8(self):
+        """Test the creation of a round with 8 players"""
+        
+        result = [
+            [[1,8], [2,7], [3,6], [4,5]],
+            [[8,5], [6,4], [7,3], [1,2]],
+            [[2,8], [3,1], [4,7], [5,6]],
+            [[8,6], [7,5], [1,4], [2,3]],
+            [[3,8], [4,2], [5,1], [6,7]],
+            [[8,7], [1,6], [2,5], [3,4]],
+            [[4,8], [5,3], [6,2], [7,1]]
+        ]
+        
+        tournament = generic_tournament_creation(8)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round, result)
+
+    @tag("continua")
+    def test_004_create_round_10(self):
+        """Test the creation of a round with 10 players"""
+        
+        result = [
+            [[1,10], [2,9], [3,8], [4,7], [5,6]],
+            [[10,6], [7,5], [8,4], [9,3], [1,2]],
+            [[2,10], [3,1], [4,9], [5,8], [6,7]],
+            [[10,7], [8,6], [9,5], [1,4], [2,3]],
+            [[3,10], [4,2], [5,1], [6,9], [7,8]],
+            [[10,8], [9,7], [1,6], [2,5], [3,4]],
+            [[4,10], [5,3], [6,2], [7,1], [8,9]],
+            [[10,9], [1,8], [2,7], [3,6], [4,5]],
+            [[5,10], [6,4], [7,3], [8,2], [9,1]]
+        ]
+        
+        tournament = generic_tournament_creation(10)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round,result)
+
+    @tag("continua")
+    def test_005_create_round_12(self):
+        """Test the creation of a round with 12 players"""
+        
+        result = [
+            [[1,12], [2,11], [3,10], [4,9], [5,8], [6,7]],
+            [[12,7], [8,6], [9,5], [10,4], [11,3], [1,2]],
+            [[2,12], [3,1], [4,11], [5,10], [6,9], [7,8]],
+            [[12,8], [9,7], [10,6], [11,5], [1,4], [2,3]],
+            [[3,12], [4,2], [5,1], [6,11], [7,10], [8,9]],
+            [[12,9], [10,8], [11,7], [1,6], [2,5], [3,4]],
+            [[4,12], [5,3], [6,2], [7,1], [8,11], [9,10]],
+            [[12,10], [11,9], [1,8], [2,7], [3,6], [4,5]],
+            [[5,12], [6,4], [7,3], [8,2], [9,1], [10,11]],
+            [[12,11], [1,10], [2,9], [3,8], [4,7], [5,6]],
+            [[6,12], [7,5], [8,4], [9,3], [10,2], [11,1]]
+        ]
+        
+        tournament = generic_tournament_creation(12)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round,result)
+
+    @tag("continua")
+    def test_006_create_round_14(self):
+        """Test the creation of a round with 14 players"""
+        
+        result = [
+            [[1,14], [2,13], [3,12], [4,11], [5,10], [6,9], [7,8]],
+            [[14,8], [9,7], [10,6], [11,5], [12,4], [13,3], [1,2]],
+            [[2,14], [3,1], [4,13], [5,12], [6,11], [7,10], [8,9]],
+            [[14,9], [10,8], [11,7], [12,6], [13,5], [1,4], [2,3]],
+            [[3,14], [4,2], [5,1], [6,13], [7,12], [8,11], [9,10]],
+            [[14,10], [11,9], [12,8], [13,7], [1,6], [2,5], [3,4]],
+            [[4,14], [5,3], [6,2], [7,1], [8,13], [9,12], [10,11]],
+            [[14,11], [12,10], [13,9], [1,8], [2,7], [3,6], [4,5]],
+            [[5,14], [6,4], [7,3], [8,2], [9,1], [10,13], [11,12]],
+            [[14,12], [13,11], [1,10], [2,9], [3,8], [4,7], [5,6]],
+            [[6,14], [7,5], [8,4], [9,3], [10,2], [11,1], [12,13]],
+            [[14,13], [1,12], [2,11], [3,10], [4,9], [5,8], [6,7]],
+            [[7,14], [8,6], [9,5], [10,4], [11,3], [12,2], [13,1]]
+        ]
+
+        tournament = generic_tournament_creation(14)
+        create_round = create_rounds(tournament)
+        self.assertEqual(create_round,result)
 
 
 class TournamentModelTestExtension(TransactionTestCase):
@@ -252,4 +379,3 @@ class TournamentModelTestExtension(TransactionTestCase):
         )
         expected_str = f"BYE vs {str(player1)}({player1.id}) = White"
         self.assertEqual(str(game), expected_str)
-
