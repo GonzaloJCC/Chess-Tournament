@@ -74,6 +74,14 @@ class Tournament(models.Model):
 	def __str__(self):
 		return f"tournament_{self.id:02d}"
 
+	def getGames(self):
+		games = []
+		for round in self.round_set.all():
+			for game in round.game_set.all():
+				games.append(game)
+
+		return games
+
 	def getPlayers(self, sorted=False):
 		# Get all the players	
 		players = self.players.all()
