@@ -82,7 +82,7 @@ class ExtraTests(TestCase):
         with self.assertRaises(LichessAPIError) as context:
             game.get_lichess_game_result("hYBj9cvA8TTC")
         self.assertIn(
-            "The player trallegas101 is not meloon195", str(context.exception)
+            "Players for game hYBj9cvA8TTC are different", str(context.exception)
         )
 
     @tag("continua")
