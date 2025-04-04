@@ -54,28 +54,35 @@ class GameViewSet(ModelViewSet):
 	serializer_class = GameSerializer
 
 	def get_permissions(self):
-		if self.action == 'update':
+		if self.action in ['update', 'partial_update']:
 			return [AllowAny()]
 		return super().get_permissions()
 
 	def update(self, request, *args, **kwargs):
 		instance = self.get_object()
-		if not instance.finished:
-			response = super().update(request, *args, **kwargs)
-			instance.finished = True
-			instance.save()
-			return response
-		else:
+
+		if instance.finished:
 			raise PermissionDenied("This game has already finished and cannot be updated.")
 
+		serializer = self.get_serializer(instance, data=request.data, partial=True)
+		if serializer.is_valid():
+			serializer.save()
+			instance.finished = True
+			instance.save(update_fields=['finished'])
+			return Response(
+				serializer.data, status=status.HTTP_200_OK
+			)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TournamentViewSet(ModelViewSet):
-	queryset = Tournament.objects.all()
+	queryset = Tournament.objects.all().order_by('start_date', '-id')
 	serializer_class = TournamentSerializer
 	pagination_class = CustomPagination
 
 	# Redefined the permissions of the list set
 	def get_permissions(self):
-		if self.action == 'list':
+		if self.action in ['list', 'retrieve']:
 			return [AllowAny()]
 		return super().get_permissions()
 
@@ -160,7 +167,7 @@ class SearchTournamentsAPIView(APIView):
 			)
 		
 		# Get all the tournaments
-		tournaments = Tournament.objects.filter(name__icontains=search_string)
+		tournaments = Tournament.objects.filter(name__icontains=search_string).order_by('-name')
 
 		# Serialize the tournaments
 		serializer = TournamentSerializer(tournaments, many=True)
@@ -443,11 +450,11 @@ class AdminUpdateGameAPIView(APIView):
 			)
 
 		# Check if the user is an administrative user
-		if not request.user.is_staff:
+		if not request.user == game.round.tournament.administrativeUser:
 			return Response(
 				{
 					'result': False,
-					'message': 'Only administrative users can update the game'
+					'message': 'Only the user that create the tournament can update it'
 				}, status=status.HTTP_403_FORBIDDEN
 			)
 		
