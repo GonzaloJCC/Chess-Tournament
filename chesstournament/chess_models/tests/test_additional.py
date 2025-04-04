@@ -131,7 +131,7 @@ class ExtraTests(TestCase):
 class CreateRoundTests(TestCase):
 
     @classmethod
-    def setUpTestData(self):
+    def setUpTestData(cls):
         # Create the people
         players = []
         count = 1
@@ -143,7 +143,7 @@ class CreateRoundTests(TestCase):
             players.append(player)
 
         # Create the tournaments
-        self.tournaments = []
+        cls.tournaments = []
         for i in range(6):
             tournament = Tournament.objects.create(
                 name=f"Test Tournament {i}",
@@ -156,7 +156,7 @@ class CreateRoundTests(TestCase):
                 tournament.players.add(player)
 
             tournament.save()
-            self.tournaments.append(tournament)
+            cls.tournaments.append(tournament)
 
     @tag("continua")
     def test_001_create_round_4(self):
