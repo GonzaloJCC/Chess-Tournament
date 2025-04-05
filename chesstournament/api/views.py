@@ -68,7 +68,11 @@ class GameViewSet(ModelViewSet):
                 "This game has already finished and cannot be updated."
             )
 
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=True
+        )
         if serializer.is_valid():
             serializer.save()
             instance.finished = True
@@ -97,7 +101,8 @@ class RoundViewSet(ModelViewSet):
 class CustomUserViewSet(UserViewSet):
     def create(self, request, *args, **kwargs):
         return Response(
-            {"error": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+            {"error": "Method not allowed"},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
         )
 
 
@@ -158,9 +163,9 @@ class SearchTournamentsAPIView(APIView):
             )
 
         # Get all the tournaments
-        tournaments = Tournament.objects.filter(name__icontains=search_string).order_by(
-            "-name"
-        )
+        tournaments = Tournament.objects.filter(
+            name__icontains=search_string
+        ).order_by("-name")
 
         # Serialize the tournaments
         serializer = TournamentSerializer(tournaments, many=True)
@@ -177,7 +182,10 @@ class TournamentCreateAPIView(APIView):
             data=request.data, context={"request": request}
         )
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Save the tournament
         try:
@@ -185,7 +193,10 @@ class TournamentCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(
-                {"result": False, "message": f"Error creating tournament: {str(e)}"},
+                {
+                    "result": False,
+                    "message": f"Error creating tournament:" f" {str(e)}",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -205,7 +216,11 @@ class GetRanking(APIView):
         ranking = getRanking(tournament)
         if not ranking:
             return Response(
-                {"result": False, "message": "Error while getting the ranking"},
+                {
+                    "result": False,
+                    "message": "Error while "
+                    "getting the ranking"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -217,9 +232,10 @@ class GetRanking(APIView):
 
             result[current] = {}
             result[current]["id"] = player.id
-            result[current]["name"] = (
-                player.lichess_username if player.lichess_username else player.name
-            )
+            if player.lichess_username:
+                result[current]["username"] = player.lichess_username
+            else:
+                result[current]["username"] = player.name
             result[current]["score"] = data["PS"]
             result[current]["rank"] = data["rank"]
 
@@ -287,7 +303,8 @@ class UpdateLichessGameAPIView(APIView):
             return Response(
                 {
                     "result": False,
-                    "message": "Game is blocked, only administrator can update it",
+                    "message": "Game is blocked,"
+                               " only administrator can update it",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -304,7 +321,8 @@ class UpdateLichessGameAPIView(APIView):
             game_result, _, _ = game.get_lichess_game_result(lichess_game_id)
         except LichessAPIError as e:
             return Response(
-                {"result": False, "message": str(e)}, status=status.HTTP_400_BAD_REQUEST
+                {"result": False, "message": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
         game.result = game_result
@@ -356,7 +374,8 @@ class UpdateOTBGameAPIView(APIView):
             return Response(
                 {
                     "result": False,
-                    "message": "Game is blocked, only administrator can update it",
+                    "message": "Game is blocked, only"
+                               " administrator can update it",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -388,7 +407,10 @@ class AdminUpdateGameAPIView(APIView):
 
         if None in [game_id, otb_result]:
             return Response(
-                {"result": False, "message": "game_id and otb_result are required"},
+                {
+                    "result": False, "message":
+                    "game_id and otb_result" " are required"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -413,7 +435,8 @@ class AdminUpdateGameAPIView(APIView):
             return Response(
                 {
                     "result": False,
-                    "message": "Only the user that create the tournament can update it",
+                    "message": "Only the user that create"
+                               " the tournament can update it",
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
