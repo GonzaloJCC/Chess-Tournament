@@ -14,7 +14,29 @@ from chess_models.models.constants import (
     TournamentSpeed,
     TournamentBoardType,
 )
-
+from django.test import TransactionTestCase, RequestFactory
+from rest_framework.request import Request
+from rest_framework.test import force_authenticate
+from rest_framework import status
+from chess_models.models import Game, Player
+from api.views import GameViewSet
+from django.test import tag, TransactionTestCase
+from rest_framework.test import APIClient
+from rest_framework import status
+# from django.contrib.auth.models import User
+from chess_models.models import (Player, Game, RankingSystem,
+                                 Round, Tournament, Scores,
+                                 TournamentType, TournamentSpeed,
+                                 TournamentBoardType, LICHESS_USERS
+                                 )
+from api.views import CustomPagination
+from django.contrib.auth.models import User
+from chess_models.management.commands.constants import (playerListCasita,
+                                                        casitaResults)
+from chess_models.models.game import create_rounds
+from django.urls import reverse
+from rest_framework.test import APITestCase
+from chess_models.models import Game
 
 class ExtraTests(TestCase):
 
@@ -454,3 +476,46 @@ class TournamentSerializerTest(TestCase):
         self.assertEqual(res["board_type"], TournamentBoardType.LICHESS)
         self.assertEqual(res["tournament_type"], TournamentType.ROUNDROBIN)
         self.assertEqual(res["rankingList"], [RankingSystem.BUCHHOLZ])
+
+###########################################################################
+###########################################################################
+###########################################################################
+###########################################################################
+
+class GameViewSetUpdateInvalidTest(APITestCase):
+    def setUp(self):
+        # Crear jugadores
+        self.white = Player.objects.create(name="Player White", lichess_rating_rapid=1200)
+        self.black = Player.objects.create(name="Player Black", lichess_rating_rapid=1300)
+
+        self.tournament = Tournament.objects.create(
+            name="Test Tournament", win_points=1,
+            draw_points=0.5, lose_points=0
+        )
+        self.round = Round.objects.create(name="Round 1", tournament=self.tournament)
+
+        # Crear juego sin terminar, asociando la ronda creada
+        self.game = Game.objects.create(
+            white=self.white,
+            black=self.black,
+            finished=False,
+            round=self.round,
+        )
+
+        # Obtener la URL del endpoint detail
+        self.url = reverse("game-detail", args=[self.game.id])
+
+    @tag("continua")
+    def test_update_with_invalid_data_returns_400(self):
+        # Datos inválidos: "result" con un valor no permitido
+        invalid_data = {
+            "result": "NOT_VALID"  # suponiendo que el
+            # serializer tiene `choices` en result
+        }
+
+        response = self.client.patch(self.url, data=invalid_data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("result", response.data)
+
+
