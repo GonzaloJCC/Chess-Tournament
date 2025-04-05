@@ -7,6 +7,7 @@ from .other_models import LichessAPIError
 
 import requests
 
+
 # swissByes not needed,
 # implements ROUNDROBIN case with an even number of players
 def create_rounds(tournament: Tournament, swissByes=[]):
@@ -33,7 +34,7 @@ def create_rounds(tournament: Tournament, swissByes=[]):
         else:
             first_pair = [fixed, others[0]]
         round.append(first_pair)
-        
+
         # Rest of players
         L = others[1:]
         m = len(L)
@@ -41,7 +42,7 @@ def create_rounds(tournament: Tournament, swissByes=[]):
             pair = [L[i], L[-(i + 1)]]
             round.append(pair)
         schedule.append(round)
-        
+
         # Rote the positions
         rot_amt = rot % len(others)
         others = others[-rot_amt:] + others[:-rot_amt]
@@ -121,7 +122,6 @@ class Game(models.Model):
         # Fixing the inconsistent quotes
         white_player = data["players"]["white"]["userId"].lower()
         black_player = data["players"]["black"]["userId"].lower()
-        
 
         white_correct = self.white.lichess_username.lower()
         black_correct = self.black.lichess_username.lower()
