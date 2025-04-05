@@ -103,10 +103,11 @@ WSGI_APPLICATION = 'chesstournament.wsgi.application'
 
 import dj_database_url
 
-if 'TESTING' in os.environ:
-	db_data = os.getenv('LOCAL_DATABASE_URL')
-else:
+prod_database = os.getenv('PROD_DATABASE', 'true') in ['true', 'True']
+if prod_database:
 	db_data = os.getenv('PROD_DATABASE_URL')
+else:
+	db_data = os.getenv('LOCAL_DATABASE_URL')
 
 DATABASES = {
     'default': dj_database_url.config(
