@@ -14,5 +14,4 @@ python3 manage.py makemigrations
 python manage.py migrate
 
 # Create the super user
-# python manage.py createsu
-make create_super_user
+python manage.py createsu
