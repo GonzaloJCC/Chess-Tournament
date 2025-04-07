@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+import dj_database_url
 
 # Load the .env file
 load_dotenv()
@@ -42,18 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	
-    # API
-	'rest_framework',
-	'rest_framework.authtoken',
-	
-    # Auth
-	'djoser',
-	'corsheaders',
-	
-    # Apps
+    'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+    'corsheaders',
     'chess_models',
-	'api'
+    'api'
 ]
 
 REST_FRAMEWORK = {
@@ -67,7 +62,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-	'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,18 +96,16 @@ WSGI_APPLICATION = 'chesstournament.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import dj_database_url
-
 prod_database = os.getenv('PROD_DATABASE', 'true') in ['true', 'True']
 if prod_database:
-	db_data = os.getenv('PROD_DATABASE_URL')
+    db_data = os.getenv('PROD_DATABASE_URL')
 else:
-	db_data = os.getenv('LOCAL_DATABASE_URL')
+    db_data = os.getenv('LOCAL_DATABASE_URL')
 
 DATABASES = {
     'default': dj_database_url.config(
-		default=db_data,
-		conn_max_age=500
+        default=db_data,
+        conn_max_age=500
     )
 }
 
@@ -163,9 +156,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Djoser settings
 DJOSER = {
-	'USER_ID_FIELD': 'username',
+    'USER_ID_FIELD': 'username',
 }
 
 # CORS
-CORS_ORIGIN_ALLOW_ALL = os.getenv('CORS_ORIGIN_ALLOW_ALL', 'f') in ['t', 'True']
+CORS_ORIGIN_ALLOW_ALL = \
+    os.getenv('CORS_ORIGIN_ALLOW_ALL', 'f') in ['t', 'True']
 CORS_ORIGIN_WHITELIST = os.getenv('CORS_ORIGIN_WHITELIST').split(' ')

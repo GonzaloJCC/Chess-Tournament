@@ -63,7 +63,10 @@ class GameViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
 
-        if instance.finished and request.user != instance.round.tournament.administrativeUser:
+        user = request.user
+        tournament = instance.round.tournament
+
+        if instance.finished and user != tournament.administrativeUser:
             raise PermissionDenied(
                 "This game has already finished and cannot be updated."
             )
