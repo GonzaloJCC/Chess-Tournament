@@ -2,7 +2,7 @@
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from djoser.views import UserViewSet
@@ -57,7 +57,7 @@ class GameViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["update", "partial_update"]:
-            return [AllowAny()]
+            return []
         return super().get_permissions()
 
     def update(self, request, *args, **kwargs):
@@ -85,14 +85,14 @@ class GameViewSet(ModelViewSet):
 
 
 class TournamentViewSet(ModelViewSet):
-    queryset = Tournament.objects.all().order_by("start_date", "-id")
+    queryset = Tournament.objects.all().order_by("-start_date", "-id")
     serializer_class = TournamentSerializer
     pagination_class = CustomPagination
 
     # Redefined the permissions of the list set
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
-            return [AllowAny()]
+            return []
         return super().get_permissions()
 
 
