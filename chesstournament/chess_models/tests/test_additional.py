@@ -57,6 +57,8 @@ URLTOURNAMENT = '/api/v1/tournaments/'
 URLCREATETOURNAMENT = '/api/v1/tournament_create/'
 URLSEARCH = '/api/v1/searchTournaments/'
 GETPLAYERS = '/api/v1/get_players/'
+GETROUNDSRESULTS = '/api/v1/get_round_results/'
+ADMINUPDATEGAME = '/api/v1/admin_update_game/'
 
 class ExtraTests(TestCase):
 
@@ -775,6 +777,7 @@ class GetRankingAPIViewTest(TransactionTestCase):
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+
 class CreateTournamentAPIViewTest(TransactionTestCase):
     """Test the tournament API"""
     reset_sequences = True
@@ -840,12 +843,26 @@ class CreateTournamentAPIViewTest(TransactionTestCase):
                 'lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana'
                 }
         response = self.client.post(URLCREATETOURNAMENT, data)
-        data = response.json()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         response = self.client.post(URLCREATETOURNAMENT, data)
-        data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("continua")
+    def test_005_create_tournament_exception(self):
+        """Test exception handling during tournament creation"""
+        self.client.force_authenticate(user=self.user1)
+        data = {'name': "tournament_name",
+                'tournament_type': TournamentType.SWISS,
+                'tournament_speed': TournamentSpeed.CLASSICAL,
+                'board_type': TournamentBoardType.LICHESS,
+                'players':
+                'lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana'
+                }
+        with patch.object(TournamentSerializer, "save", side_effect=Exception("Mocked exception")):
+            response = self.client.post(URLCREATETOURNAMENT, data)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertIn("Error creating tournament:", response.data["message"])
 
 
 class GetPlayers(TransactionTestCase):
@@ -877,6 +894,43 @@ class GetPlayers(TransactionTestCase):
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+class GetRoundResultsAPIViewTest(TransactionTestCase):
+    """Test the tournament API"""
+    reset_sequences = True
+
+    def setUp(self):
+        # I do not think delete is needed
+        # since the system should reset the database
+        # before each test
+        Tournament.objects.all().delete()
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username='user1',
+                                              password='testpassword')
+
+    @tag("continua")
+    def test_001_get_round_results(self):  # OK
+        """Get round results"""
+        self.client.force_authenticate(user=self.user1)
+        tournament_name = "tournament_1"
+        data = {'name': tournament_name,
+                'tournament_type': TournamentType.SWISS,
+                'tournament_speed': TournamentSpeed.CLASSICAL,
+                'board_type': TournamentBoardType.LICHESS,
+                'players':
+                'lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana'
+                }
+        response = self.client.post(URLTOURNAMENT, data)
+        tournament_id = response.data['id']
+        response = self.client.get(
+            GETROUNDSRESULTS + f'{tournament_id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @tag("continua")
+    def test_002_get_round_results_no_tournament(self):  # OK
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.get(
+            GETROUNDSRESULTS + f'99999999/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class UpdateLichessGameAPIView(TransactionTestCase):
     reset_sequences = True
@@ -1141,9 +1195,6 @@ class UpdateOTBGameAPIViewTest(TransactionTestCase):
             data = response.json()
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-
-############################################################################################################################
-###########################################################################################################################
     @tag("continua")
     def test_003_not_game(self):  # OK
         """ update OTB game by white player
@@ -1186,5 +1237,101 @@ class UpdateOTBGameAPIViewTest(TransactionTestCase):
             data = response.json()
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @tag("continua")
+    def test_004_change_game_status(self):
+
+        # Create a game
+        tournament = Tournament.objects.create(
+            name="Test Tournament",
+            tournament_type=TournamentType.ROUNDROBIN,
+            tournament_speed=TournamentSpeed.CLASSICAL,
+            board_type=TournamentBoardType.OTB
+        )
+
+        for username, id in playerListCasita:
+            name = username
+            email = f"{username}@example.com"
+            player = Player.objects.create(id=id,
+                                           name=name,
+                                           email=email)
+            # add players to tournament
+            tournament.players.add(player)
+
+        create_rounds(tournament)
+        game = tournament.getGames()[0]
+        game.finished = True
+        game.save()
+
+        data = {
+            'game_id': game.id,
+            'name': game.white.name,
+            'email': game.white.email,
+            'otb_result': Scores.WHITE.value
+        }
+        response = self.client.post(
+            self.update_otb_game_url,
+            data=data
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class AdminUpdateGameAPIViewTest(TransactionTestCase):
+    reset_sequences = True
+
+    def setUp(self):
+        # I do not think delete is needed
+        # since the system should reset the database
+        # before each test
+        Tournament.objects.all().delete()
+        self.client = APIClient()
+        self.user1 = User.objects.create_user(username='user1',
+                                              password='testpassword')
+    @tag("continua")
+    def test_001_no_params_sent(self):
+        # Test with no parameters sent
+        self.client.force_authenticate(user=self.user1)
+        response = self.client.post(ADMINUPDATEGAME, {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @tag("continua")
+    def test_002_result_invent(self):
+        # Test with invalid result
+        self.client.force_authenticate(user=self.user1)
+
+        # Create a game
+        tournament = Tournament.objects.create(
+            name="Test Tournament",
+            tournament_type=TournamentType.ROUNDROBIN,
+            tournament_speed=TournamentSpeed.CLASSICAL,
+            board_type=TournamentBoardType.OTB
+        )
+        
+        for username, id in playerListCasita:
+            name = username
+            email = f"{username}@example.com"
+            player = Player.objects.create(id=id,
+                                           name=name,
+                                           email=email)
+            # add players to tournament
+            tournament.players.add(player)
+
+        create_rounds(tournament)
+        game = tournament.getGames()[0]
+
+        data = {
+            'game_id': game.id,
+            'otb_result': 'invalid_result'
+        }
+        response = self.client.post(ADMINUPDATEGAME, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    @tag("continua")
+    def test_003_no_game_found(self):
+        self.client.force_authenticate(user=self.user1)
+        data = {
+            'game_id': 999999,
+            'otb_result': Scores.WHITE.value
+        }
+        response = self.client.post(ADMINUPDATEGAME, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Game does not exist", response.data["message"])
