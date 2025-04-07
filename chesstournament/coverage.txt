@@ -1,0 +1,30 @@
+· Command: coverage erase && coverage run --omit="*/test*,*/management*,*/migrations*" --source=chess_models,api manage.py test --tag=continua
+Found 96 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+................................................................................................
+----------------------------------------------------------------------
+Ran 96 tests in 94.564s
+
+OK
+Destroying test database for alias 'default'...
+Name                                  Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------
+api/__init__.py                           0      0   100%
+api/admin.py                              1      0   100%
+api/apps.py                               4      0   100%
+api/urls.py                              11      0   100%
+api/views.py                            203      0   100%
+chess_models/__init__.py                  0      0   100%
+chess_models/admin.py                     7      0   100%
+chess_models/apps.py                      4      0   100%
+chess_models/models/__init__.py           6      0   100%
+chess_models/models/constants.py         41      0   100%
+chess_models/models/game.py              77      0   100%
+chess_models/models/other_models.py      11      0   100%
+chess_models/models/player.py            53      0   100%
+chess_models/models/round.py              7      0   100%
+chess_models/models/tournament.py       170      0   100%
+chess_models/serializers.py              34      0   100%
+-------------------------------------------------------------------
+TOTAL                                   629      0   100%
