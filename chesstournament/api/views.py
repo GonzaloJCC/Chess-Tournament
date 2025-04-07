@@ -124,7 +124,7 @@ class CreateRoundAPIView(APIView):
         tournament_id = int(tournament_id)
 
         # Search the tournament
-        tournament = Tournament.objects.get(id=tournament_id)
+        tournament = Tournament.objects.filter(id=tournament_id).first()
         if not tournament:
             return Response(
                 {"result": False, "message": "Tournament not found"},
