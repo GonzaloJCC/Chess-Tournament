@@ -10,9 +10,8 @@
 <style scoped>
 	footer {
 	text-align: center;
-	padding: 1rem;
+	padding: 10px;
 	background-color: #f5f5f5;
-	font-size: 0.9rem;
 	color: #555;
 	}
 </style>
