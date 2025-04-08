@@ -12,3 +12,8 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+/* Import bootstrap CSS and JS */
+import "../node_modules/bootstrap/dist/js/bootstrap.js"
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+
