@@ -1,5 +1,5 @@
 {
-  "name": "5",
+  "name": "chesstournament-client",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -11,9 +11,12 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.5",
+    "bootstrap": "^5.3.0",
     "pinia": "^2.0.21",
     "vue": "^3.2.38",
-    "vue-router": "^4.1.5"
+    "vue-router": "^4.1.5",
+    "vue3-chessboard": "^1.2.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
