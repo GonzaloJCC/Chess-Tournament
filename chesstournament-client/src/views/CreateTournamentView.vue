@@ -1,5 +1,5 @@
 <template>
-	<p>Home View!</p>
+	<p>CreateTournament View</p>
 </template>
 
 <script setup>
