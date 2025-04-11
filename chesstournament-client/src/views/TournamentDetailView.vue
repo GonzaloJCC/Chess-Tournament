@@ -1,5 +1,5 @@
 <template>
-	<p>TournamentDetail View</p>
+  <p>TournamentDetail View</p>
 </template>
 
 <script setup>

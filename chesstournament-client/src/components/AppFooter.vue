@@ -1,7 +1,7 @@
 <template>
-	<footer>
-		© 2025 Copyright: Gonzalo Jiménez and Luis Pastor
-	</footer>
+  <footer>
+    © 2025 Copyright: Gonzalo Jiménez and Luis Pastor
+  </footer>
 </template>
 
 <script setup>
