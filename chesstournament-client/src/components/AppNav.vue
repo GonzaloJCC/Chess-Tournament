@@ -1,24 +1,60 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand"><router-link class="navbar-brand" to="/">Chess-T-DB</router-link></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <router-link
+      class="navbar-brand"
+      to="/"
+    >
+      Chess-T-DB
+    </router-link>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon" />
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+    <div
+      id="navbarNav"
+      class="collapse navbar-collapse"
+    >
+      <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link"><router-link class="nav-link" to="/">Home</router-link></a>
+          <router-link
+            class="nav-link"
+            to="/"
+          >
+            Home
+          </router-link>
         </li>
         <li class="nav-item">
           <!-- TODO : Add disable when the user is logged -->
-          <a class="nav-link"><router-link class="nav-link" to="/log-in">Admin Log-In</router-link></a>
+          <router-link
+            class="nav-link"
+            to="/log-in"
+          >
+            Admin Log-In
+          </router-link>
         </li>
         <li class="nav-item">
           <!-- TODO : Add disable when the user is not logged -->
-          <a class="nav-link"><router-link class="nav-link" to="/log-out">Log-Out</router-link></a>
+          <router-link
+            class="nav-link"
+            to="/log-out"
+          >
+            Log-Out
+          </router-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link"><router-link class="nav-link" to="/faq">FAQ</router-link></a>
+          <router-link
+            class="nav-link"
+            to="/faq"
+          >
+            FAQ
+          </router-link>
         </li>
       </ul>
     </div>
