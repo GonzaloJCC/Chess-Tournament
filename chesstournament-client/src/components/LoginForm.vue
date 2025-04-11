@@ -51,6 +51,7 @@
 
 <script setup>
   import { ref, computed } from 'vue';
+  defineEmits(['confirm-form'])
   const APIURL = import.meta.env.VITE_APIURL;
 
   /* NOTE: Object where the data will be saved */
@@ -86,6 +87,8 @@
     }
   });
 
+  /* NOTE: Function to clear the fields */
+
   /* NOTE: Function called when the form is submitted */
   const handleLogin = async () => {
     /* Reset state */
@@ -112,12 +115,12 @@
 
       if (!response.ok) throw new Error('Invalid username or password')
       
-      /* TODO: Send the information to the parent */
+      /* Send the information to the parent */
+      emit('confirm-form', response.json())
 
-    } catch(e)
-    {
+    }
+    catch(e){
       error.value.set(`Error: ${e.message}`);
-      return ;
     }
   }
 </script>
