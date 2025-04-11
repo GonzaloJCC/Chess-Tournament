@@ -51,7 +51,7 @@
 
 <script setup>
   import { ref, computed } from 'vue';
-  defineEmits(['confirm-form'])
+  const emit = defineEmits(['confirm-form'])
   const APIURL = import.meta.env.VITE_APIURL;
 
   /* NOTE: Object where the data will be saved */
@@ -116,7 +116,7 @@
       if (!response.ok) throw new Error('Invalid username or password')
       
       /* Send the information to the parent */
-      emit('confirm-form', response.json())
+      emit('confirm-form', await response.json())
 
     }
     catch(e){
