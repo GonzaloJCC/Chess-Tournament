@@ -31,18 +31,18 @@
           </router-link>
         </li>
         <li class="nav-item">
-          <!-- TODO : Add disable when the user is logged -->
           <router-link
             class="nav-link"
+            :class="{ disabled: isLoggued }"
             to="/log-in"
           >
             Admin Log-In
           </router-link>
         </li>
         <li class="nav-item">
-          <!-- TODO : Add disable when the user is not logged -->
           <router-link
             class="nav-link"
+            :class="{ disabled: !isLoggued }"
             to="/log-out"
           >
             Log-Out
@@ -62,7 +62,14 @@
 </template>
 
 <script setup>
-console.log("a")
+  import { useTokenStore } from '@/stores/token';
+  import { computed } from 'vue';
+  
+  const token = useTokenStore();
+  const isLoggued = computed(() => {
+    return token.token !== null;
+  });
+
 </script>
 
 <style scoped>
