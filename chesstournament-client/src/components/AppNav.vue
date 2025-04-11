@@ -34,7 +34,8 @@
           <router-link
             class="nav-link"
             :class="{ disabled: isLoggued }"
-            to="/log-in"
+            to="/login"
+            data-cy="login-cypress-test"
           >
             Admin Log-In
           </router-link>
@@ -43,7 +44,7 @@
           <router-link
             class="nav-link"
             :class="{ disabled: !isLoggued }"
-            to="/log-out"
+            to="/logout"
           >
             Log-Out
           </router-link>
