@@ -1,9 +1,3 @@
-<script setup>
-  import { RouterView } from 'vue-router'
-  import AppNav from '@/components/AppNav.vue';
-  import AppFooter from '@/components/AppFooter.vue';
-</script>
-
 <template>
   <div id="container">
     <AppNav id="AppNav" />
@@ -13,6 +7,12 @@
     <AppFooter id="AppFooter" />
   </div>
 </template>
+
+<script setup>
+  import { RouterView } from 'vue-router'
+  import AppNav from '@/components/AppNav.vue';
+  import AppFooter from '@/components/AppFooter.vue';
+</script>
 
 <style scoped>
   #container {
