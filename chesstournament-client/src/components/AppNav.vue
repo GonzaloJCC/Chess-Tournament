@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <router-link
       class="navbar-brand"
       to="/"
@@ -62,6 +62,7 @@
 </template>
 
 <script setup>
+console.log("a")
 </script>
 
 <style scoped>
