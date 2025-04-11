@@ -1,10 +1,10 @@
 <template>
-    <div class="logout-wrapper">
-        <div class="logout-box">
-            <h1>Log Out</h1>
-            <p>You will be redirected to home in 5 seconds.</p>
-        </div>
+  <div class="logout-wrapper">
+    <div class="logout-box">
+      <h1>Log Out</h1>
+      <p>You will be redirected to home in 5 seconds.</p>
     </div>
+  </div>
 </template>
 
 <script setup>
