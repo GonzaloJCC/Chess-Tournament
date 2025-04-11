@@ -10,6 +10,7 @@
         v-if="error.value"
         class="alert alert-danger text-center"
         role="alert"
+        data-cy="error-message"
       >
         {{ error.msg }}
       </div>
@@ -21,6 +22,7 @@
           type="text"
           placeholder="username"
           class="form-control rounded-pill border-0 shadow-sm px-4"
+          data-cy="username"
           required
         >
       </div>
@@ -32,6 +34,7 @@
           type="password"
           placeholder="password"
           class="form-control rounded-pill border-0 shadow-sm px-4"
+          data-cy="password"
           required
         >
       </div>
@@ -41,6 +44,7 @@
         <button
           type="submit"
           class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm"
+          data-cy="login-button"
         >
           Login
         </button>
