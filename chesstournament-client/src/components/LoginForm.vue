@@ -31,8 +31,8 @@
           v-model="user.password"
           type="password"
           placeholder="password"
-          required
           class="form-control rounded-pill border-0 shadow-sm px-4"
+          required
         >
       </div>
 
