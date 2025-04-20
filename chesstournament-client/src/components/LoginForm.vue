@@ -134,5 +134,6 @@
     width: 50%;
     border: 2px solid #d6d7d0;
     border-radius: 5px;
+    padding: 20px;
   }
 </style>
