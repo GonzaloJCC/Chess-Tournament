@@ -1,7 +1,9 @@
 <template>
-  <LoginForm
-    @confirm-form="handleLogin"
-  />
+  <div class="login-container">
+    <LoginForm
+      @confirm-form="handleLogin"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -20,4 +22,14 @@
 </script>
 
 <style scope>
+  .login-container {
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Asegura que el contenedor esté centrado */
+  padding: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  }
 </style>
