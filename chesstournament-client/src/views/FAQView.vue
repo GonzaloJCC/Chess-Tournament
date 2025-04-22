@@ -25,16 +25,45 @@
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingTwo">
         <button class="accordion-button collapsed shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Example 2
+          How can administrators add players to a tournament?
         </button>
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
         <div class="accordion-body">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus metus leo, sollicitudin ut pulvinar a, faucibus non nunc.
-          Ut porta nibh sed nunc vehicula, non ornare turpis rutrum. Integer ac urna neque. Maecenas et nulla sit amet ipsum sagittis
-          porta eu eget nisi. Sed accumsan tincidunt mauris non tempor. Suspendisse finibus tortor vel libero blandit laoreet. Donec
-          accumsan, mi eget tempus elementum, tortor nisl mattis arcu, et pretium mi neque ac sem. Pellentesque posuere velit a ante
-          semper tempus.
+          <p>
+            Players are added using the CSV file format. Comma-separated values (CSV) is a text format that uses commas to separate values,
+            and newlines to separate records. The first row of the CSV file must contain the column names.
+          </p>
+          <p>
+            The column names must match the fields of the player. The more common fields are: name, email, lichess_username.
+          </p>
+          <p>
+            For lichess tournaments, the lichess_username is required. For OTB tournaments, the name and email are required.
+          </p>
+          <p>
+            For lichess tournaments, the lichess_username will be checked again lichess database and the player ranking will be retrieved.
+            For OTB tournaments, the email will be used as user password.
+          </p>
+          <p>
+            Example lichess tournament:
+            <br>
+            <code>
+              lichess_username<br>
+              username1<br>
+              username2<br>
+              username3<br>
+            </code>
+          </p>
+          <p>
+            Example OTB tournament:
+            <br>
+            <code>
+              name, email<br>
+              name1 familyname1, name1@gmail.com<br>
+              name2 familyname2, name2@gmail.com<br>
+              name3 familyname3, name3@gmail.com<br>
+            </code>
+          </p>
         </div>
       </div>
     </div>
