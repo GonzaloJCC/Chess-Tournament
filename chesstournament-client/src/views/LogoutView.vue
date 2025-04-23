@@ -10,12 +10,15 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useTokenStore } from '@/stores/token';
 
 const router = useRouter();
 
 onMounted(() => {
     setTimeout(() => {
-        router.push('/');
+      const tokenStore = useTokenStore();
+      tokenStore.removeToken();
+      router.push('/');
     }, 5000);
 });
 </script>
