@@ -13,7 +13,7 @@
                 <tbody>
                     <tr v-for="tournament in paginatedTournaments" :key="tournament.id">
                         <td>
-                            <router-link :to="'/tournament/' + tournament.id">
+                            <router-link :to="{ name: 'tournamentdetail', query: { id: tournament.id } }">
                                 {{ tournament.name }}
                             </router-link>
                         </td>
@@ -22,10 +22,8 @@
                 </tbody>
             </table>
 
-            <!-- Controles de paginación -->
             <div class="pagination">
                 <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-                <span>Página {{ currentPage }} de {{ totalPages }}</span>
                 <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
             </div>
         </div>
@@ -41,12 +39,13 @@ const pageSize = 5;
 
 const fetchTournaments = async () => {
     try {
-        const response = await fetch(`http://localhost:8000/api/v1/tournaments/`);
-        if (!response.ok) throw new Error('Error al obtener torneos');
+        const url = `${import.meta.env.VITE_DJANGOURL}tournaments/`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Error fetching tournaments');
         const data = await response.json();
         tournaments.value = data.results;
     } catch (error) {
-        console.error('Error al cargar torneos:', error);
+        console.error('Error loading tournaments:', error);
     }
 };
 
@@ -94,7 +93,7 @@ const prevPage = () => {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 1.5rem; /* separa la tabla de la paginación */
+    margin-bottom: 1.5rem;
 }
 
 th, td {
@@ -128,7 +127,6 @@ th {
     cursor: not-allowed;
 }
 
-/* Responsive */
 @media (max-width: 48rem) {
     .tournaments {
         width: 90%;
