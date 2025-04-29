@@ -99,6 +99,41 @@
             </div>
           </div>
 
+          <!-- Ranking methods -->
+          <div class="mb-4 p-3 border rounded">
+            <label class="form-label fw-bold">Ranking method used in the tournament</label>
+            <div class="form-text mb-2">Select ranking methods in the order in which they should be applied</div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="`rank_wi"
+                :checked="selectedMethods.includes('WI')"
+                @change="onRankingChange('WI', $event.target.checked)"
+              />
+              <label class="form-check-label" for="rank_wi">
+                Number of wins (WI)
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="`rank_bt"
+                :checked="selectedMethods.includes('BT')"
+                @change="onRankingChange('BT', $event.target.checked)"
+              />
+              <label class="form-check-label" for="rank_bt">
+                Number of times player as Black (BT)
+              </label>
+            </div>
+            <div class="mt-2">
+              <small class="form-text">
+                Order in which ranking methods are applied: [ {{ selectedMethods.join(', ') }} ]
+              </small>
+            </div>
+          </div>
+
           <!-- Tournament category -->
           <div class="mb-4">
             <label for="tournamentCategoryInput" class="form-label">Tournament Category</label>
@@ -148,6 +183,16 @@
   const tournamentCategory = ref('classical');
   const playersCsv         = ref('');
   
+  const selectedMethods = ref([]);
+
+  function onRankingChange(value, checked) {
+    if (checked) {
+      selectedMethods.value.push(value);
+    } else {
+      selectedMethods.value = selectedMethods.value.filter(v => v !== value);
+    }
+  }
+
   function registerTournament() {
     /* Print the data */
     console.log({
@@ -160,6 +205,7 @@
       losePoints: losePoints.value,
       tournamentCategory: tournamentCategory.value,
       playersCsv: playersCsv.value,
+      selectedMethods: selectedMethods.value
     });
   }
 </script>
