@@ -8,7 +8,7 @@
             <legend class="float-none w-auto px-2">General</legend>
             
             <!-- Tournament name -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="tournamentNameInput" class="form-label fw-bold">Tournament Name</label>
               <input
                 v-model="tournamentName"
@@ -18,7 +18,15 @@
                 placeholder="My Tournament Name"
               >
               <div class="form-text fst-italic">Tournament full name</div>
-            </div>
+            </div> -->
+            <TextInput
+              id="tournamentNameInput"
+              v-model="tournamentName"
+              label="Tournament Name"
+              type="text"
+              placeholder="My Tournament Name"
+              helpText="Tournament full name"
+            />
             <hr class="divider">
 
             <!-- Admin Update -->
@@ -68,36 +76,27 @@
             <div class="mb-4">
               <p class="fw-bold">Points given</p>
               <div class="row g-3">
-                <div class="col">
-                  <label for="winPointsInput" class="form-label">Wins</label>
-                  <input
-                    v-model.number="winPoints"
-                    type="number"
-                    step="0.1"
-                    id="winPointsInput"
-                    class="form-control"
-                  >
-                </div>
-                <div class="col">
-                  <label for="drawPointsInput" class="form-label">Draws</label>
-                  <input
-                    v-model.number="drawPoints"
-                    type="number"
-                    step="0.1"
-                    id="drawPointsInput"
-                    class="form-control"
-                  >
-                </div>
-                <div class="col">
-                  <label for="losePointsInput" class="form-label">Loses</label>
-                  <input
-                    v-model.number="losePoints"
-                    type="number"
-                    step="0.1"
-                    id="losePointsInput"
-                    class="form-control"
-                  >
-                </div>
+                <TextInput
+                  id="winPointsInput"
+                  v-model.number="winPoints"
+                  class="col"
+                  label="Wins"
+                  type="number"
+                />
+                <TextInput
+                  id="drawPointsInput"
+                  v-model.number="drawPoints"
+                  class="col"
+                  label="Draws"
+                  type="number"
+                />
+                <TextInput
+                  id="losePointsInput"
+                  v-model.number="losePoints"
+                  class="col"
+                  label="Loses"
+                  type="number"
+                />
               </div>
             </div>
             <hr class="divider">
@@ -181,6 +180,7 @@
   
 <script setup>
   import { ref } from 'vue';
+  import TextInput from '@/components/form/TextInput.vue';
   import CheckboxInput from '@/components/form/CheckboxInput.vue';
 
   const tournamentName     = ref('');
