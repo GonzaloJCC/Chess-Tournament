@@ -158,7 +158,7 @@
             <legend class="float-none w-auto px-2">Players</legend>
 
             <!-- Player csv -->
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <label for="playersInput" class="form-label fw-bold">List of players</label>
               <textarea
                 v-model="playersCsv"
@@ -168,7 +168,15 @@
                 placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
               />
               <div class="form-text fst-italic">NOTE: The format is explained in the FAQ Page</div>
-            </div>
+            </div> -->
+            <TextAreaForm
+              id="playersInput"
+              v-model="playersCsv"
+              label="List of players"
+              rows="4"
+              placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
+              helpText="NOTE: The format is explained in the FAQ Page"
+            />
           </fieldset>
 
           <button type="submit" class="btn btn-primary w-100">Register</button>
@@ -182,6 +190,7 @@
   import { ref } from 'vue';
   import TextInput from '@/components/form/TextInput.vue';
   import CheckboxInput from '@/components/form/CheckboxInput.vue';
+  import TextAreaForm from '@/components/form/TextAreaForm.vue';
 
   const tournamentName     = ref('');
   const adminUpdate        = ref(false);
