@@ -115,6 +115,19 @@
             <div class="form-text">Select the tournament category</div>
           </div>
 
+          <!-- Player csv -->
+          <div class="mb-4">
+            <label for="playersInput" class="form-label">Players</label>
+            <textarea
+              v-model="playersCsv"
+              class="form-control"
+              id="playersInput"
+              rows="4"
+              placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
+            />
+            <div class="form-text">List of players participating in the tournament</div>
+          </div>
+
           <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
       </div>
@@ -133,6 +146,7 @@
   const drawPoints         = ref(0.0);
   const losePoints         = ref(0.0);
   const tournamentCategory = ref('classical');
+  const playersCsv         = ref('');
   
   function registerTournament() {
     /* Print the data */
@@ -145,6 +159,7 @@
       drawPoints: drawPoints.value,
       losePoints: losePoints.value,
       tournamentCategory: tournamentCategory.value,
+      playersCsv: playersCsv.value,
     });
   }
 </script>
