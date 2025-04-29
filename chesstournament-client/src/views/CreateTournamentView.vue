@@ -22,20 +22,12 @@
             <hr class="divider">
 
             <!-- Admin Update -->
-            <div class="form-check mb-3">
-              <input
-                v-model="adminUpdate"
-                class="form-check-input"
-                type="checkbox"
-                id="adminUpdateInput"
-              >
-              <label class="form-check-label fw-bold" for="adminUpdateInput">
-                Only administrators can update games
-              </label>
-              <div class="form-text">
-                Set to false if users can update games. Otherwise, only administrators can input the results.
-              </div>
-            </div>
+            <CheckboxInput
+              id="adminUpdateInput"
+              v-model="adminUpdate"
+              label="Only administrators can update games"
+              helpText="Set to false if users can update games. Otherwise, only administrators can input the results."
+            />
           </fieldset>
 
           <fieldset class="border rounded p-3 mb-4">
@@ -189,7 +181,8 @@
   
 <script setup>
   import { ref } from 'vue';
-  
+  import CheckboxInput from '@/components/form/CheckboxInput.vue';
+
   const tournamentName     = ref('');
   const adminUpdate        = ref(false);
   const pairingSystem      = ref('Round Robin');
@@ -199,8 +192,7 @@
   const losePoints         = ref(0.0);
   const tournamentCategory = ref('classical');
   const playersCsv         = ref('');
-  
-  const selectedMethods = ref([]);
+  const selectedMethods    = ref([]);
 
   function onRankingChange(value, checked) {
     if (checked) {
