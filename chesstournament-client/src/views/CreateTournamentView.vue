@@ -8,17 +8,6 @@
             <legend class="float-none w-auto px-2">General</legend>
             
             <!-- Tournament name -->
-            <!-- <div class="mb-3">
-              <label for="tournamentNameInput" class="form-label fw-bold">Tournament Name</label>
-              <input
-                v-model="tournamentName"
-                type="text"
-                class="form-control"
-                id="tournamentNameInput"
-                placeholder="My Tournament Name"
-              >
-              <div class="form-text fst-italic">Tournament full name</div>
-            </div> -->
             <TextInput
               id="tournamentNameInput"
               v-model="tournamentName"
@@ -42,34 +31,29 @@
             <legend class="float-none w-auto px-2">Configuration</legend>
 
             <!-- Pairing System -->
-            <div class="mb-3">
-              <label for="pairingSystemInput" class="form-label fw-bold">Pairing System</label>
-              <select
-                v-model="pairingSystem"
-                class="form-select"
-                id="pairingSystemInput"
-              >
-                <option value="Round Robin">Round Robin</option>
-                <option value="Swiss">Swiss</option>
-                <!-- añade más opciones si es necesario -->
-              </select>
-              <div class="form-text fst-italic">Select the pairing system (Round Robin, Swiss…)</div>
-            </div>
+            <SelectInput
+              id="pairingSystemInput"
+              v-model="pairingSystem"
+              label="Pairing System"
+              :options="[
+                { label: 'Round Robin', value: 'Round Robin' },
+                { label: 'Swiss', value: 'Swiss' }
+              ]"
+              helpText="Select the pairing system (Round Robin, Swiss…)"
+            />
             <hr class="divider">
 
             <!-- Board Type -->
-            <div class="mb-3">
-              <label for="boardTypeInput" class="form-label fw-bold">Board Type</label>
-              <select
-                v-model="boardType"
-                class="form-select"
-                id="boardTypeInput"
-              >
-                <option value="lichess">Lichess</option>
-                <option value="board">On the board</option>
-              </select>
-              <div class="form-text fst-italic">Games played on lichess or OTB</div>
-            </div>
+            <SelectInput
+              id="boardTypeInput"
+              v-model="boardType"
+              label="Board Type"
+              :options="[
+                { label: 'Lichess', value: 'lichess' },
+                { label: 'On the board', value: 'board'}
+              ]"
+              helpText="Games played on lichess or OTB"
+            />
             <hr class="divider">
 
             <!-- Points -->
@@ -138,37 +122,24 @@
             <hr class="divider">
 
             <!-- Tournament category -->
-            <div class="mb-4">
-              <label for="tournamentCategoryInput" class="form-label fw-bold">Tournament Category</label>
-              <select
-                v-model="tournamentCategory"
-                class="form-select"
-                id="tournamentCategoryInput"
-              >
-                <option value="classical">Classical</option>
-                <option value="tapid">Rapid</option>
-                <option value="blitz">Blitz</option>
-                <option value="bullet">Bullet</option>
-              </select>
-              <div class="form-text fst-italic">Select the tournament category</div>
-            </div>
+            <SelectInput
+              id="tournamentCategoryInput"
+              v-model="tournamentCategory"
+              label="Tournament Category"
+              :options="[
+                { label: 'Classical', value: 'classical' },
+                { label: 'Rapid', value: 'rapid' },
+                { label: 'Blitz', value: 'blitz' },
+                { label: 'Bullet', value: 'bullet' }
+              ]"
+              helpText="Select the tournament category"
+            />
           </fieldset>
 
           <fieldset class="border rounded p-3 mb-4">
             <legend class="float-none w-auto px-2">Players</legend>
 
             <!-- Player csv -->
-            <!-- <div class="mb-4">
-              <label for="playersInput" class="form-label fw-bold">List of players</label>
-              <textarea
-                v-model="playersCsv"
-                class="form-control"
-                id="playersInput"
-                rows="4"
-                placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
-              />
-              <div class="form-text fst-italic">NOTE: The format is explained in the FAQ Page</div>
-            </div> -->
             <TextAreaForm
               id="playersInput"
               v-model="playersCsv"
@@ -191,6 +162,7 @@
   import TextInput from '@/components/form/TextInput.vue';
   import CheckboxInput from '@/components/form/CheckboxInput.vue';
   import TextAreaForm from '@/components/form/TextAreaForm.vue';
+  import SelectInput from '@/components/form/SelectInput.vue';
 
   const tournamentName     = ref('');
   const adminUpdate        = ref(false);
