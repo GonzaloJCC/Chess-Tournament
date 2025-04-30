@@ -86,39 +86,17 @@
             <hr class="divider">
 
             <!-- Ranking methods -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">Ranking method used in the tournament</label>
-              <div class="form-text mb-2">Select ranking methods in the order in which they should be applied</div>
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="`rank_wi"
-                  :checked="selectedMethods.includes('WI')"
-                  @change="onRankingChange('WI', $event.target.checked)"
-                />
-                <label class="form-check-label" for="rank_wi">
-                  Number of wins (WI)
-                </label>
-              </div>
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="`rank_bt"
-                  :checked="selectedMethods.includes('BT')"
-                  @change="onRankingChange('BT', $event.target.checked)"
-                />
-                <label class="form-check-label" for="rank_bt">
-                  Number of times player as Black (BT)
-                </label>
-              </div>
-              <div class="mt-2">
-                <small class="form-text fst-italic">
-                  Order in which ranking methods are applied: [ {{ selectedMethods.join(', ') }} ]
-                </small>
-              </div>
-            </div>
+            <MultipleSelectInput
+              id-prefix="rank"
+              title="Ranking method used in the tournament"
+              label="Select ranking methods in the order in which they should be applied"
+              v-model="selectedMethods"
+              :options="[
+                { label: 'Number of wins', value: 'WI'},
+                { label: 'Number of times player as Black', value: 'BT'}
+              ]"
+              helpText="Order in which ranking methods are applied"
+            />
             <hr class="divider">
 
             <!-- Tournament category -->
@@ -163,6 +141,7 @@
   import CheckboxInput from '@/components/form/CheckboxInput.vue';
   import TextAreaForm from '@/components/form/TextAreaForm.vue';
   import SelectInput from '@/components/form/SelectInput.vue';
+  import MultipleSelectInput from '@/components/form/MultipleSelectInput.vue';
 
   const tournamentName     = ref('');
   const adminUpdate        = ref(false);
