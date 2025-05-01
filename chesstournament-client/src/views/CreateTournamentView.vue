@@ -36,8 +36,8 @@
               v-model="pairingSystem"
               label="Pairing System"
               :options="[
-                { label: 'Round Robin', value: 'Round Robin' },
-                { label: 'Swiss', value: 'Swiss' }
+                { label: 'Round Robin', value: 'SR' },
+                { label: 'Swiss', value: 'SW' }
               ]"
               helpText="Select the pairing system (Round Robin, Swiss…)"
             />
@@ -49,8 +49,8 @@
               v-model="boardType"
               label="Board Type"
               :options="[
-                { label: 'Lichess', value: 'lichess' },
-                { label: 'On the board', value: 'board'}
+                { label: 'Lichess', value: 'LIC' },
+                { label: 'On the board', value: 'OTB' }
               ]"
               helpText="Games played on lichess or OTB"
             />
@@ -105,10 +105,10 @@
               v-model="tournamentCategory"
               label="Tournament Category"
               :options="[
-                { label: 'Classical', value: 'classical' },
-                { label: 'Rapid', value: 'rapid' },
-                { label: 'Blitz', value: 'blitz' },
-                { label: 'Bullet', value: 'bullet' }
+                { label: 'Classical', value: 'CL' },
+                { label: 'Rapid', value: 'RA' },
+                { label: 'Blitz', value: 'BL' },
+                { label: 'Bullet', value: 'BU' }
               ]"
               helpText="Select the tournament category"
             />
@@ -128,6 +128,14 @@
             />
           </fieldset>
 
+          <div
+            v-if="error_msg"
+            class="alert alert-danger text-center"
+            role="alert"
+            data-cy="error-message"
+          >
+            {{ error_msg }}
+          </div>
           <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
       </div>
@@ -143,39 +151,70 @@
   import SelectInput from '@/components/form/SelectInput.vue';
   import MultipleSelectInput from '@/components/form/MultipleSelectInput.vue';
 
+  import { useTokenStore } from '@/stores/token';
+  import { useRouter } from 'vue-router';
+
+  /* Form values */
   const tournamentName     = ref('');
   const adminUpdate        = ref(false);
-  const pairingSystem      = ref('Round Robin');
-  const boardType          = ref('lichess');
-  const winPoints          = ref(1.0);
-  const drawPoints         = ref(0.0);
+  const pairingSystem      = ref('SR');
+  const boardType          = ref('LIC');
+  const winPoints          = ref(2.0);
+  const drawPoints         = ref(1.0);
   const losePoints         = ref(0.0);
-  const tournamentCategory = ref('classical');
+  const tournamentCategory = ref('CL');
   const playersCsv         = ref('');
   const selectedMethods    = ref([]);
 
-  function onRankingChange(value, checked) {
-    if (checked) {
-      selectedMethods.value.push(value);
-    } else {
-      selectedMethods.value = selectedMethods.value.filter(v => v !== value);
-    }
-  }
+  const error_msg = ref(null)
 
-  function registerTournament() {
-    /* Print the data */
-    console.log({
-      tournamentName: tournamentName.value,
-      adminUpdate: adminUpdate.value,
-      pairingSystem: pairingSystem.value,
-      boardType: boardType.value,
-      winPoints: winPoints.value,
-      drawPoints: drawPoints.value,
-      losePoints: losePoints.value,
-      tournamentCategory: tournamentCategory.value,
-      playersCsv: playersCsv.value,
-      selectedMethods: selectedMethods.value
-    });
+  /* Session token */
+  const tokenStore = useTokenStore();
+
+  /* Router data */
+  const router = useRouter();
+
+  /* API URL */
+  const APIURL = import.meta.env.VITE_APIURL;
+
+  /* Function to register the tournament */
+  const registerTournament = async () => {
+    error_msg.value = null;
+    
+    /* Send the request to the API */
+    try
+    {
+      const result = await fetch(`${APIURL}/api/v1/tournament_create/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${tokenStore.token}`
+        },
+        body: JSON.stringify({
+          name: tournamentName.value,
+          players: playersCsv.value,
+          only_administrative: adminUpdate.value,
+          tournament_type: pairingSystem.value,
+          tournament_speed: tournamentCategory.value,
+          board_type: boardType.value,
+          win_points: winPoints.value,
+          draw_points: drawPoints.value,
+          lose_points: losePoints.value,
+          rankingList: selectedMethods.value
+        })
+      })
+      const data = await result.json();
+      if (!result.ok)
+        throw new Error(data);
+
+      /* All OK, redirect to / */
+      router.push('/');
+    }
+    catch (error)
+    {
+      error_msg.value = 'Error creating tournament. Please, check the data provided';
+    }
+
   }
 </script>
 
