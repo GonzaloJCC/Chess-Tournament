@@ -11,9 +11,10 @@ import requests
 # swissByes not needed,
 # implements ROUNDROBIN case with an even number of players
 def create_rounds(tournament: Tournament, swissByes=[]):
+    print("FUNCION")
     players = tournament.players.all()
     players_count = len(players)
-
+    print(f"Torneo: {tournament} Players: {players}")
     if players_count % 2 != 0 or players_count < 2:
         return []
 
@@ -24,8 +25,9 @@ def create_rounds(tournament: Tournament, swissByes=[]):
     schedule = []
     num_rounds = players_count - 1
     rot = players_count // 2 - 1
-
+    print("ANTES")
     for r in range(num_rounds):
+        print("DENTRO")
         round = []
 
         # Save the fixed player. Check if he is white ot black

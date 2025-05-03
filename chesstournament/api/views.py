@@ -192,7 +192,10 @@ class TournamentCreateAPIView(APIView):
 
         # Save the tournament
         try:
-            serializer.save()
+            tournament = serializer.save()
+            create_rounds(tournament)
+            tournament.administrativeUser = request.user
+            tournament.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(
@@ -280,8 +283,39 @@ class GetRoundResults(APIView):
             )
 
         rounds = Round.objects.filter(tournament=tournament).all()
-        serializer = RoundSerializer(rounds, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        round_results = []
+
+        for round_obj in rounds:
+            games = Game.objects.filter(round=round_obj).all()
+            games_data = []
+
+            for game in games:
+                games_data.append({
+                    "id": game.id,
+                    "finished": game.finished,
+                    "start_date": game.start_date,
+                    "update_date": game.update_date,
+                    "result": game.result,
+                    "rankingOrder": game.rankingOrder,
+                    "white_player_name": game.white.name if game.white else "Unknown",
+                    "white_player_email": game.white.email if game.white else "Unknown",
+                    "black_player_name": game.black.name if game.black else "Unknown",
+                    "black_player_email": game.black.email if game.black else "Unknown",
+                    "white_lichess_username": game.white.lichess_username if game.white else "Unknown",
+                    "black_lichess_username": game.black.lichess_username if game.black else "Unknown",
+                    "round": game.round.id,
+                })
+
+            round_results.append({
+                "id": round_obj.id,
+                "name": round_obj.name,
+                "start_date": round_obj.start_date,
+                "end_date": round_obj.end_date,
+                "finish": round_obj.finish,
+                "games": games_data
+            })
+
+        return Response(round_results, status=status.HTTP_200_OK)
 
 
 class UpdateLichessGameAPIView(APIView):
@@ -434,11 +468,12 @@ class AdminUpdateGameAPIView(APIView):
             )
 
         # Check if the user is an administrative user
-        if not request.user == game.round.tournament.administrativeUser:
+        tournament = game.round.tournament        
+        if tournament.only_administrative and not request.user == tournament.administrativeUser:
             return Response(
                 {
                     "result": False,
-                    "message": "Only the user that create"
+                    "message": "Only the user that created"
                                " the tournament can update it",
                 },
                 status=status.HTTP_403_FORBIDDEN,
