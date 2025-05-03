@@ -1235,7 +1235,8 @@ class GetPlayers(TransactionTestCase):
                 'tournament_speed': TournamentSpeed.CLASSICAL,
                 'board_type': TournamentBoardType.LICHESS,
                 'players':
-                'lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana'
+                'https://chesstournament-server.onrender.
+com/api/v1/'
                 }
         response = self.client.post(URLTOURNAMENT, data)
         tournament_id = response.data['id']
