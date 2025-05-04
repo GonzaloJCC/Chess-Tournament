@@ -53,11 +53,22 @@ const pageSize = 5;
 
 const fetchTournaments = async () => {
     try {
-        const url = `${import.meta.env.VITE_DJANGOURL}tournaments/`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Error fetching tournaments');
-        const data = await response.json();
-        tournaments.value = data.results;
+        let url = `${import.meta.env.VITE_DJANGOURL}tournaments/`;
+        const allTournaments = [];
+
+        while (url) {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Error fetching tournaments');
+            const data = await response.json();
+
+            // Agregar los torneos de la página actual a la lista total
+            allTournaments.push(...data.results);
+
+            // Actualizar la URL para la siguiente página (si existe)
+            url = data.next; // `data.next` contiene la URL de la siguiente página o `null` si no hay más páginas
+        }
+
+        tournaments.value = allTournaments;
     } catch (error) {
         console.error('Error loading tournaments:', error);
     }

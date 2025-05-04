@@ -5,6 +5,7 @@
       v-model="local_data"
       class="form-check-input"
       type="checkbox"
+      data-cy="only_administrative-cypress-test"
     >
 
     <label

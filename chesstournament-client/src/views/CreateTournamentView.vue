@@ -2,7 +2,7 @@
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6">
-        <h1 class="text-center mb-4">Create a Tournament</h1>
+        <h1 class="text-center mb-4" data-cy="create-tournament-title">Create a Tournament</h1>
         <form @submit.prevent="registerTournament">
           <fieldset class="border rounded p-3 mb-4">
             <legend class="float-none w-auto px-2">General</legend>
@@ -15,6 +15,7 @@
               type="text"
               placeholder="My Tournament Name"
               helpText="Tournament full name"
+              data-cy="name-cypress-test"
             />
             <hr class="divider">
 
@@ -35,6 +36,7 @@
               id="pairingSystemInput"
               v-model="pairingSystem"
               label="Pairing System"
+              
               :options="[
                 { label: 'Round Robin', value: 'SR' },
                 { label: 'Swiss', value: 'SW' }
@@ -53,6 +55,7 @@
                 { label: 'On the board', value: 'OTB' }
               ]"
               helpText="Games played on lichess or OTB"
+              data-cy="boardtype-cypress-test"
             />
             <hr class="divider">
 
@@ -67,6 +70,7 @@
                   label="Wins"
                   type="number"
                   step="0.1"
+                  data-cy="win-points-input"
                 />
                 <TextInput
                   id="drawPointsInput"
@@ -75,6 +79,7 @@
                   label="Draws"
                   type="number"
                   step="0.1"
+                  data-cy="draw-points-input"
                 />
                 <TextInput
                   id="losePointsInput"
@@ -83,6 +88,7 @@
                   label="Loses"
                   type="number"
                   step="0.1"
+                  data-cy="lose-points-input"
                 />
               </div>
             </div>
@@ -99,6 +105,7 @@
                 { label: 'Number of times player as Black', value: 'BT'}
               ]"
               helpText="Order in which ranking methods are applied"
+              data-cy="ranking-methods-select"
             />
             <hr class="divider">
 
@@ -114,6 +121,7 @@
                 { label: 'Bullet', value: 'BU' }
               ]"
               helpText="Select the tournament category"
+              data-cy="tournament_speed-cypress-test"
             />
           </fieldset>
 
@@ -128,6 +136,7 @@
               rows="4"
               placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
               helpText="NOTE: The format is explained in the FAQ Page"
+              data-cy="players-csv-input"
             />
           </fieldset>
 
@@ -139,7 +148,7 @@
           >
             {{ error_msg }}
           </div>
-          <button type="submit" class="btn btn-primary w-100">Register</button>
+          <button type="submit" class="btn btn-primary w-100" data-cy="submit-tournament-button">Register</button>
         </form>
       </div>
     </div>

@@ -11,6 +11,7 @@
       v-model="local_data"
       class="form-select"
       :id="id"
+      data-cy="single_round_robin-cypress-test"
     >
       <option
         v-for="current in options"

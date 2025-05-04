@@ -9,7 +9,7 @@
         <p>
             To create a new tournament, press the "Create Tournament" button. To edit or update games, rounds, or tournaments, select the desired tournament.
         </p>
-        <router-link to="/createtournament" class="create-tournament-button">
+        <router-link to="/createtournament" class="create-tournament-button" data-cy="create-Tournament-button">
             Create Tournament
         </router-link>
     </div>
