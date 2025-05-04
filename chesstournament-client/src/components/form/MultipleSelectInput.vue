@@ -22,7 +22,7 @@
       <input
         class="form-check-input"
         type="checkbox"
-        :id="`${idPrefix}_${current.value}`"
+        :id="`${idPrefix}-option-${current.value.toLowerCase()}`"
         :checked="local_data.includes(current.value)"
         @change="onCheck(current.value, $event.target.checked)"
         :data-cy="cypress"
