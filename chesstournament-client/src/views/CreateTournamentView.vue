@@ -217,10 +217,12 @@
           rankingList: selectedMethods.value
         })
       })
+      const data = await result.json()
       if (!result.ok)
-        throw new Error(data);
+        throw new Error();
+  
       /* All OK, redirect to / */
-      router.push('/');
+      router.push('/tournamentdetail/?id=' + data.id);
     }
     catch (error)
     {
