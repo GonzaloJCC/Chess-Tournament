@@ -219,14 +219,17 @@
       })
       const data = await result.json()
       if (!result.ok)
-        throw new Error();
+        throw new Error(data.message);
   
       /* All OK, redirect to / */
       router.push('/tournamentdetail/?id=' + data.id);
     }
     catch (error)
     {
-      error_msg.value = 'Error creating tournament. Please, check the data provided';
+      if (error.message && error.message.includes("Error fetching user"))
+        error_msg.value = 'Error: can not add players to tournament';
+      else
+        error_msg.value = 'Error creating tournament. Please, check the data provided';
     }
 
   }
