@@ -7,9 +7,10 @@
                     type="text"
                     placeholder="Tournament"
                     class="search-input"
+                    data-cy="input-search"
                 />
                 <button v-if="searchTerm" @click="clearSearch" class="clear-button">x</button>
-                <button @click="searchTournaments" class="search-button">Search</button>
+                <button @click="searchTournaments" class="search-button" data-cy="submit-search">Search</button>
             </div>
 
             <table v-if="isTableVisible">
@@ -21,7 +22,8 @@
                 </thead>
                 <tbody>
                     <tr v-for="tournament in filteredTournaments" :key="tournament.id">
-                        <td>
+                        <td
+                            :data-cy="`search-${tournament.name}`">
                             <router-link :to="{ path: '/tournamentdetail', query: { id: tournament.id } }">
                                 {{ tournament.name }}
                             </router-link>

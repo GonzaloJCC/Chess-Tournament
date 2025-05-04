@@ -44,6 +44,7 @@
           <router-link
             class="nav-link"
             :class="{ disabled: !isLoggued }"
+            data-cy="logout-cypress-test"
             to="/logout"
           >
             Log-Out

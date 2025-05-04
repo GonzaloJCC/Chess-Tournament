@@ -1,6 +1,6 @@
 <template>
     <div class="info">
-        <p>
+        <p data-cy="admin-log">
             Hello, you are logged in as an administrator. Remember, with great power comes great responsibility.
         </p>
         <p>

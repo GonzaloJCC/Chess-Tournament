@@ -12,7 +12,9 @@
                 </thead>
                 <tbody>
                     <tr v-for="tournament in paginatedTournaments" :key="tournament.id">
-                        <td>
+                        <td
+                            :data-cy="tournament.name"
+                        >
                             <router-link :to="{ name: 'tournamentdetail', query: { id: tournament.id } }">
                                 {{ tournament.name }}
                             </router-link>
@@ -23,8 +25,20 @@
             </table>
 
             <div class="pagination">
-                <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-                <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                <button
+                    @click="prevPage"
+                    :disabled="currentPage === 1"
+                    data-cy="previous-button"    
+                >
+                    Previous
+                </button>
+                <button
+                    @click="nextPage"
+                    :disabled="currentPage === totalPages"
+                    data-cy="next-button"
+                >
+                    Next
+                </button>
             </div>
         </div>
     </div>
@@ -43,6 +57,7 @@ const fetchTournaments = async () => {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error fetching tournaments');
         const data = await response.json();
+        console.log(data)
         tournaments.value = data.results;
     } catch (error) {
         console.error('Error loading tournaments:', error);

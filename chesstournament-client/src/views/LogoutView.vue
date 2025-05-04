@@ -1,7 +1,7 @@
 <template>
   <div class="logout-wrapper">
     <div class="logout-box">
-      <h1>Log Out</h1>
+      <h1 data-cy="logoutPage">Log Out</h1>
       <p>You will be redirected to home in 5 seconds.</p>
     </div>
   </div>
@@ -28,7 +28,7 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    //padding-top: 100px;
+    /* padding-top: 100px; */
     height: 100vh;
     background-color: #ffffff;
 
