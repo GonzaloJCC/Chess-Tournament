@@ -66,6 +66,7 @@
                   class="col"
                   label="Wins"
                   type="number"
+                  step="0.1"
                 />
                 <TextInput
                   id="drawPointsInput"
@@ -73,6 +74,7 @@
                   class="col"
                   label="Draws"
                   type="number"
+                  step="0.1"
                 />
                 <TextInput
                   id="losePointsInput"
@@ -80,6 +82,7 @@
                   class="col"
                   label="Loses"
                   type="number"
+                  step="0.1"
                 />
               </div>
             </div>
