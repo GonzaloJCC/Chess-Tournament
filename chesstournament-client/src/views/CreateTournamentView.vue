@@ -15,7 +15,7 @@
               type="text"
               placeholder="My Tournament Name"
               helpText="Tournament full name"
-              data-cy="name-cypress-test"
+              cypress="name-cypress-test"
             />
             <hr class="divider">
 
@@ -25,6 +25,7 @@
               v-model="adminUpdate"
               label="Only administrators can update games"
               helpText="Set to false if users can update games. Otherwise, only administrators can input the results."
+              cypress="only_administrative-cypress-test"
             />
           </fieldset>
 
@@ -42,6 +43,7 @@
                 { label: 'Swiss', value: 'SW' }
               ]"
               helpText="Select the pairing system (Round Robin, Swiss…)"
+              cypress="single_round_robin-cypress-test"
             />
             <hr class="divider">
 
@@ -55,7 +57,7 @@
                 { label: 'On the board', value: 'OTB' }
               ]"
               helpText="Games played on lichess or OTB"
-              data-cy="boardtype-cypress-test"
+              cypress="boardtype-cypress-test"
             />
             <hr class="divider">
 
@@ -70,7 +72,7 @@
                   label="Wins"
                   type="number"
                   step="0.1"
-                  data-cy="win-points-input"
+                  cypress="win-points-input"
                 />
                 <TextInput
                   id="drawPointsInput"
@@ -79,7 +81,7 @@
                   label="Draws"
                   type="number"
                   step="0.1"
-                  data-cy="draw-points-input"
+                  cypress="draw-points-input"
                 />
                 <TextInput
                   id="losePointsInput"
@@ -88,7 +90,7 @@
                   label="Loses"
                   type="number"
                   step="0.1"
-                  data-cy="lose-points-input"
+                  cypress="lose-points-input"
                 />
               </div>
             </div>
@@ -105,7 +107,7 @@
                 { label: 'Number of times player as Black', value: 'BT'}
               ]"
               helpText="Order in which ranking methods are applied"
-              data-cy="ranking-methods-select"
+              cypress="ranking-methods-select"
             />
             <hr class="divider">
 
@@ -121,7 +123,7 @@
                 { label: 'Bullet', value: 'BU' }
               ]"
               helpText="Select the tournament category"
-              data-cy="tournament_speed-cypress-test"
+              cypress="tournament_speed-cypress-test"
             />
           </fieldset>
 
@@ -130,13 +132,13 @@
 
             <!-- Player csv -->
             <TextAreaForm
-              id="playersInput"
+              id="input_9"
               v-model="playersCsv"
               label="List of players"
               rows="4"
               placeholder="Introduce players using the CSV format (see FAQ for details). Do NOT add trailing spaces"
               helpText="NOTE: The format is explained in the FAQ Page"
-              data-cy="players-csv-input"
+              cypress="players-csv-input"
             />
           </fieldset>
 
