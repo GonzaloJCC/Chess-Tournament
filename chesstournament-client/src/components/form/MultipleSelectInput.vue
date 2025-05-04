@@ -25,6 +25,7 @@
         :id="`${idPrefix}_${current.value}`"
         :checked="local_data.includes(current.value)"
         @change="onCheck(current.value, $event.target.checked)"
+        :data-cy="cypress"
       >
 
       <label
@@ -53,12 +54,13 @@ import { watch, ref } from 'vue';
 
 /* Define the input and the output event */
 const props = defineProps({
-  idPrefix: { type: String, required: true },
-  title: { type: String, default: undefined},
-  label: { type: String, default: undefined },
+  idPrefix:   { type: String, required: true },
+  title:      { type: String, default: undefined},
+  label:      { type: String, default: undefined },
   modelValue: { required: true },
-  options: { type: Array, default: () => []},
-  helpText: { type: String, default: undefined }
+  options:    { type: Array, default: () => []},
+  helpText:   { type: String, default: undefined },
+  cypress:    { type: String, default: undefined },
 });
 const emit = defineEmits(['update:modelValue']);
 

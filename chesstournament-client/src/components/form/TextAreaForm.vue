@@ -13,6 +13,7 @@
       :rows="rows"
       class="form-control"
       :placeholder="placeholder"
+      :data-cy="cypress"
     />
 
     <div
@@ -35,6 +36,7 @@ modelValue:	  { required: true },
 rows:			    { type: String, default: '4' },
 placeholder:  { type: String, default: '' },
 helpText: 	  { type: String, default: '' },
+cypress:      { type: String, default: undefined },
 });
 const emit = defineEmits(['update:modelValue']);
 

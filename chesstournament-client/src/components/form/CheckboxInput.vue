@@ -5,7 +5,7 @@
       v-model="local_data"
       class="form-check-input"
       type="checkbox"
-      data-cy="only_administrative-cypress-test"
+      :data-cy="cypress"
     >
 
     <label
@@ -30,6 +30,7 @@ const props = defineProps({
   label:		  { type: String, required: true },
   modelValue:	{ required: true },
   helpText: 	{ type: String, default: '' },
+  cypress:    { type: String, default: undefined },
 });
 const emit = defineEmits(['update:modelValue']);
 

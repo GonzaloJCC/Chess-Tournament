@@ -11,7 +11,7 @@
       v-model="local_data"
       class="form-select"
       :id="id"
-      data-cy="single_round_robin-cypress-test"
+      :data-cy="cypress"
     >
       <option
         v-for="current in options"
@@ -36,11 +36,12 @@ import { watch, ref } from 'vue';
 
 /* Define the input and the output event */
 const props = defineProps({
-  id: { type: String, required: true },
-  label: { type: String, required: true },
+  id:         { type: String, required: true },
+  label:      { type: String, required: true },
   modelValue: { required: true },
-  options: { type: Array, default: () => []},
-  helpText: { type: String, default: undefined }
+  options:    { type: Array, default: () => []},
+  helpText:   { type: String, default: undefined },
+  cypress:    { type: String, default: undefined },
 });
 const emit = defineEmits(['update:modelValue']);
 

@@ -14,6 +14,7 @@
       :step="step"
       class="form-control"
       :placeholder="placeholder"
+      :data-cy="cypress"
     >
 
     <div v-if="helpText"
@@ -36,6 +37,7 @@ const props = defineProps({
   step:         { type: Number, default: undefined },
   placeholder:  { type: String, default: '' },
   helpText: 	  { type: String, default: '' },
+  cypress:      { type: String, default: undefined },
 });
 const emit = defineEmits(['update:modelValue']);
 
