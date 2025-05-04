@@ -1,6 +1,11 @@
 <template>
     <div class="wrap-all-three">
-        <HomeInfo />
+        <template v-if="isLoggedIn">
+            <HomeInfoAdmin />
+        </template>
+        <template v-else>
+            <HomeInfo />
+        </template>
         <div class="bottom-row">
             <HomeTournaments />
             <HomeSearch />
@@ -10,8 +15,17 @@
 
 <script setup>
 import HomeInfo from '@/components/HomeInfo.vue';
+import HomeInfoAdmin from '@/components/HomeInfoAdmin.vue';
 import HomeTournaments from '@/components/HomeTournaments.vue';
 import HomeSearch from '@/components/HomeSearch.vue';
+import { useTokenStore } from '@/stores/token';
+import { computed } from 'vue';
+
+// Accede al tokenStore
+const tokenStore = useTokenStore();
+
+// Computed para verificar si el usuario está logueado
+const isLoggedIn = computed(() => tokenStore.token !== null);
 </script>
 
 <style scoped>

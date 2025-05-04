@@ -203,10 +203,8 @@
           rankingList: selectedMethods.value
         })
       })
-      const data = await result.json();
       if (!result.ok)
         throw new Error(data);
-
       /* All OK, redirect to / */
       router.push('/');
     }

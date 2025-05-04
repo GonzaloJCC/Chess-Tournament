@@ -3,7 +3,6 @@
         <p>
             Welcome to the Chess Tournament Database. This database features the unique ability for players to update the results of their games. To create tournaments, an administrative account is required. However, any player can enter the result of a game.
         </p>
-
         <p>
             You can use the search button to find tournaments by name. For further information, please refer to the
             <router-link to="/faq" class="">FAQ</router-link> section.
@@ -31,6 +30,23 @@ html {
     font-family: 'Cascadia Code', Arial, sans-serif;
     margin: 0 auto;
     box-sizing: border-box;
+}
+
+.create-tournament-button {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.create-tournament-button:hover {
+    background-color: #1a252f;
 }
 
 @media (max-width: 48rem) {
