@@ -34,7 +34,7 @@ const props = defineProps({
   label:		    { type: String, required: true },
   modelValue:	  { required: true },
   type:			    { type: String, default: 'text' },
-  step:         { type: Number, default: undefined },
+  step:         { type: String, default: undefined },
   placeholder:  { type: String, default: '' },
   helpText: 	  { type: String, default: '' },
   cypress:      { type: String, default: undefined },
