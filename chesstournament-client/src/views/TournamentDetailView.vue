@@ -3,7 +3,9 @@
         <div v-if="loading">Loading...</div>
         <div v-else-if="error">{{ error }}</div>
         <div v-else>
-            <h1>Tournament: {{ tournament.name }}</h1>
+            <h1
+                data-cy="tournament-title"
+            >Tournament: {{ tournament.name }}</h1>
 
             <div class="content-container">
                 <!-- Ranking Section -->
@@ -45,7 +47,9 @@
                     </div>
 					
                     <div v-for="round in rounds" :key="round.id" class="round-table">
-                        <h3>{{ round.name }}</h3>
+                        <h3
+                            :data-cy="round.name.toLowerCase().replace(/\s+/g, '_')"
+                        >{{ round.formatted_name }}</h3>
                         <table>
                             <thead>
                                 <tr>
@@ -56,7 +60,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="game in gamesByRound[round.id] || []" :key="game.id">
+                                <tr
+                                    v-for="game in gamesByRound[round.id] || []"
+                                    :key="game.id"
+                                    :data-cy="`game_${round.number}_${game.count}`"
+                                >
                                     <td>{{ game.white_player_name }}</td>
                                     <td>
                                         <!-- Mostrar un campo de texto si el torneo es de tipo LIC y el resultado no está bloqueado -->
@@ -195,24 +203,39 @@ async function fetchRounds() {
     if (!res.ok) {
         throw new Error('Failed to fetch rounds');
     }
-    const data = await res.json();
+    let data = await res.json();
+    
+    /* Convert "Round 1" in "round_001" */
+    let count = 0;
+    data.forEach(item => {
+        item.formatted_name = item.name.toLowerCase().replace(/\s+/g, '_').replace(/(\d+)$/, (_, num) => {
+            return num.padStart(3, '0');
+        });
+        item.number = ++count;
+    })
+
     rounds.value = data;
 
+    count = -1;
     gamesByRound.value = data.reduce((acc, round) => {
-        acc[round.id] = round.games.map(game => ({
-            id: game.id,
-            white_player_name: game.white_player_name,
-            black_player_name: game.black_player_name,
-            white_player_email: game.white_player_email,
-            black_player_email: game.black_player_email,
-            result: game.result,
-            lichessGameID: '', // Nuevo campo para almacenar el gameID de LIC
-            adminResult: '', // Nuevo campo para el selector Admin
-            status: game.finished ? 'Finished' : 'Ongoing',
-            emailInput: '',
-            emailValidated: false,
-            resultLocked: game.finished, // Sincroniza con el campo "finished" del backend
-        }));
+        acc[round.id] = round.games.map(game => {
+            count++;
+            return {
+                id: game.id,
+                count: count % ((rounds.value.length + 1) / 2) + 1,
+                white_player_name: game.white_player_name,
+                black_player_name: game.black_player_name,
+                white_player_email: game.white_player_email,
+                black_player_email: game.black_player_email,
+                result: game.result,
+                lichessGameID: '', // Nuevo campo para almacenar el gameID de LIC
+                adminResult: '', // Nuevo campo para el selector Admin
+                status: game.finished ? 'Finished' : 'Ongoing',
+                emailInput: '',
+                emailValidated: false,
+                resultLocked: game.finished, // Sincroniza con el campo "finished" del backend
+            }
+        });
         return acc;
     }, {});
 }
