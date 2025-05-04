@@ -57,7 +57,6 @@ const fetchTournaments = async () => {
         const response = await fetch(url);
         if (!response.ok) throw new Error('Error fetching tournaments');
         const data = await response.json();
-        console.log(data)
         tournaments.value = data.results;
     } catch (error) {
         console.error('Error loading tournaments:', error);
