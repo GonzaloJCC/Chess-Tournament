@@ -130,9 +130,9 @@
                                             <option value="w">White wins (1-0)</option>
                                             <option value="b">Black wins (0-1)</option>
                                             <option value="=">Draw (1/2-1/2)</option>
-                                            <!-- <option value="*">Unknown Result (*)</option> -->
+                                            <option value="*">Unknown Result (*)</option> <!-- Nueva opción -->
                                         </select>
-                                        <button @click="confirmAdminResult(game)"><i class="bi bi-send" /></button>
+                                        <button @click="handleAdminResultChange(game)"><i class="bi bi-send" /></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -366,6 +366,49 @@ async function confirmAdminResult(game) {
     } catch (error) {
         console.error("Error updating admin game result:", error);
         alert("An unexpected error occurred while updating the game result. Please try again.");
+    }
+}
+
+async function handleAdminResultChange(game) {
+    try {
+        if (!tokenStore.token) {
+            console.error("Token is missing.");
+            return;
+        }
+
+        const isUnknownResult = game.adminResult === "*";
+
+        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}admin_update_game/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Token ${tokenStore.token}`,
+            },
+            body: JSON.stringify({
+                game_id: game.id,
+                otb_result: game.adminResult, // Enviar el resultado seleccionado por el administrador
+            }),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            console.error("Error response from backend:", errorData);
+            return;
+        }
+
+        // Actualizar el estado del juego localmente
+        if (isUnknownResult) {
+            game.resultLocked = false; // Desbloquear el campo result
+            game.result = ""; // Restablecer el resultado para que regrese al selector
+        } else {
+            game.result = game.adminResult; // Actualizar el resultado localmente
+            game.resultLocked = true; // Bloquear el resultado
+        }
+
+        // Actualizar el ranking
+        await fetchRanking();
+    } catch (error) {
+        console.error("Error updating admin game result:", error);
     }
 }
 
