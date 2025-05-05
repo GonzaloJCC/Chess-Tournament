@@ -80,18 +80,30 @@
                                                 </button>
                                             </template>
                                             <template v-else>
-												<div v-if="game.result === 'w'">
-													<p>1-0</p>
-												</div>
-												<div v-else-if="game.result === 'b'">
-													<p>0-1</p>
-												</div>
-												<div v-else-if="game.result === '='">
-													<p>1/2-1/2</p>
-												</div>
-												<div v-else>
-													<p>*</p>
-												</div>
+                                                <div v-if="game.result === 'w'">
+                                                    <p>1-0</p>
+                                                </div>
+                                                <div v-else-if="game.result === 'b'">
+                                                    <p>0-1</p>
+                                                </div>
+                                                <div v-else-if="game.result === '='">
+                                                    <p>1/2-1/2</p>
+                                                </div>
+                                                <div v-else-if="game.result === '*' || !game.resultLocked">
+                                                    <!-- Mostrar el selector si el resultado es "*" y no está bloqueado -->
+                                                    <select v-model="game.result">
+                                                        <option value="w">White wins (1-0)</option>
+                                                        <option value="b">Black wins (0-1)</option>
+                                                        <option value="=">Draw (1/2-1/2)</option>
+                                                        <option value="*">Unknown Result (*)</option>
+                                                    </select>
+                                                    <button @click="promptConfirmGameResult(game)">
+                                                        <i class="bi bi-send" />
+                                                    </button>
+                                                </div>
+                                                <div v-else>
+                                                    <p>*</p>
+                                                </div>
                                             </template>
                                         </template>
 
@@ -110,17 +122,29 @@
                                             </template>
                                             <template v-else>
                                                 <div v-if="game.result === 'w'">
-													<p>1-0</p>
-												</div>
-												<div v-else-if="game.result === 'b'">
-													<p>0-1</p>
-												</div>
-												<div v-else-if="game.result === '='">
-													<p>1/2-1/2</p>
-												</div>
-												<div v-else>
-													<p>*</p>
-												</div>
+                                                    <p>1-0</p>
+                                                </div>
+                                                <div v-else-if="game.result === 'b'">
+                                                    <p>0-1</p>
+                                                </div>
+                                                <div v-else-if="game.result === '='">
+                                                    <p>1/2-1/2</p>
+                                                </div>
+                                                <div v-else-if="game.result === '*' || !game.resultLocked">
+                                                    <!-- Mostrar el selector si el resultado es "*" y no está bloqueado -->
+                                                    <select v-model="game.result">
+                                                        <option value="w">White wins (1-0)</option>
+                                                        <option value="b">Black wins (0-1)</option>
+                                                        <option value="=">Draw (1/2-1/2)</option>
+                                                        <option value="*">Unknown Result (*)</option>
+                                                    </select>
+                                                    <button @click="promptConfirmGameResult(game)">
+                                                        <i class="bi bi-send" />
+                                                    </button>
+                                                </div>
+                                                <div v-else>
+                                                    <p>*</p>
+                                                </div>
                                             </template>
                                         </template>
                                     </td>
@@ -223,8 +247,8 @@ async function fetchRounds() {
             return {
                 id: game.id,
                 count: count % ((rounds.value.length + 1) / 2) + 1,
-                white_player_name: game.white_player_name || game.white_lichess_username || "Unknown", // Prioriza el nombre o el username de Lichess
-                black_player_name: game.black_player_name || game.black_lichess_username || "Unknown", // Prioriza el nombre o el username de Lichess
+                white_player_name: game.white_player_name || game.white_lichess_username || "Unknown",
+                black_player_name: game.black_player_name || game.black_lichess_username || "Unknown",
                 white_player_email: game.white_player_email,
                 black_player_email: game.black_player_email,
                 result: game.result,
@@ -233,7 +257,8 @@ async function fetchRounds() {
                 status: game.finished ? "Finished" : "Ongoing",
                 emailInput: '',
                 emailValidated: false,
-                resultLocked: game.finished, // Sincroniza con el campo "finished" del backend
+                // Si el resultado es "*", desbloquea el selector
+                resultLocked: game.result !== "*", // Bloquea solo si el resultado no es "*"
             };
         });
         return acc;

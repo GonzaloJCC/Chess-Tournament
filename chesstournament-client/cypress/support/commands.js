@@ -89,7 +89,7 @@ Cypress.Commands.add("delete_tournament", (tournament_name) => {
     tournament_name +
     "').delete()\n" +
     "EOF\n";
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // delete all tournaments
@@ -140,7 +140,7 @@ Cypress.Commands.add("delete_all_tournaments", () => {
     "Tournament.objects.all().delete()\n" +
     "EOF\n";
   // cy.log("COMMAND: " + command);
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // delete all players
@@ -164,7 +164,7 @@ Cypress.Commands.add("delete_all_players", () => {
     "from chess_models.models import Player\n" +
     "Player.objects.all().delete()\n" +
     "EOF\n";
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // create tournament using django, No players
@@ -199,7 +199,7 @@ Cypress.Commands.add(
       "')\n" +
       "t.save()\n" +
       "EOF\n";
-    cy.exec(command);
+    cy.exec(command, { timeout: 120000 });
   }
 );
 
@@ -332,7 +332,7 @@ Cypress.Commands.add("add_user", (username, password) => {
     "user.save()\n" +
     "EOF\n";
   // cy.log("COMMAND: " + command)
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // create user with username and password
@@ -370,7 +370,7 @@ Cypress.Commands.add("create_player_django", (tournament_name, name, email) => {
     "t.save()\n" +
     "EOF\n";
   // cy.log("COMMAND: " + command)
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // // create user with username and password
@@ -399,7 +399,7 @@ Cypress.Commands.add("create_player_django", (tournament_name, name, email) => {
 //     "t.save()\n" +
 //     "EOF\n";
 //   // cy.log("COMMAND: " + command)
-//   cy.exec(command);
+//   cy.exec(command, { timeout: 120000 });
 // });
 
 // populate model RankingSystemClass
@@ -427,7 +427,7 @@ Cypress.Commands.add("init_ranking_system", () => {
     "r.save()\n" +
     "EOF\n";
   // cy.log("COMMAND: " + command)
-  cy.exec(command);
+  cy.exec(command, { timeout: 120000 });
 });
 
 // add results to a round for OTB games
