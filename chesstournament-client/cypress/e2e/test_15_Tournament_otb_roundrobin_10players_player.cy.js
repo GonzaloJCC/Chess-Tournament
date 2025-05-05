@@ -151,7 +151,6 @@ jrcuesta, jrcuesta@example.com
     games.forEach((tuple, index) => {
       // get row from games table
       const [white, , , result, roundN, gameN] = tuple; // Destructure the tuple
-
       // select input widget and select game result
       cy.get(`[data-cy=select-${roundN}-${gameN}]`)
         // Scroll the element into view

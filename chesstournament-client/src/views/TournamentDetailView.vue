@@ -3,104 +3,99 @@
         <div v-if="loading">Loading...</div>
         <div v-else-if="error">{{ error }}</div>
         <div v-else>
-            <h1
-                data-cy="tournament-title"
-            >Tournament: {{ tournament.name }}</h1>
+            <h1 data-cy="tournament-title">Tournament: {{ tournament.name }}</h1>
 
             <div class="content-container">
-                <!-- Ranking Section -->
-                <div class="ranking-section">
-                    <h3>Standing</h3>
-                    <table class="ranking-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Player</th>
-                                <th v-if="tournament.rankingList.includes('PS')">Points</th>
-                                <th v-if="tournament.rankingList.includes('WI')">Wins</th>
-                                <th v-if="tournament.rankingList.includes('BT')">Black Times</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="entry in ranking" :key="entry.id">
-                                <td>{{ entry.rank }}</td>
-                                <td>{{ entry.username }}</td>
-                                <td v-if="tournament.rankingList.includes('PS')">{{ entry.score }}</td>
-                                <td v-if="tournament.rankingList.includes('WI')">{{ entry.WI || 0 }}</td>
-                                <td v-if="tournament.rankingList.includes('BT')">{{ entry.BT || 0 }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Rounds Section -->
-                <div class="rounds-section" v-if="rounds.length">
-                    <!-- Mostrar el tipo de torneo -->
-                    <h2>Pairings/Results</h2>
-                    <h3 class="tournament-type">{{ tournament.board_type === 'OTB' ? 'OTB' : 'LICHESS' }}</h3>
-					<div v-if="tournament.board_type === 'LIC'">
-						<p>Press <i class="bi bi-send" /> to update the game result. See the <router-link to="/faq" class="">FAQ</router-link> for more information.</p>
-					</div>
-						<div v-else>	
-                    <p>The abbreviations used in the "result" column are explained at the end of the page.
-                        Press <i class="bi bi-send" /> to update the game result. See the <router-link to="/faq" class="">FAQ</router-link> for more information.</p>
-                    </div>
-					
-                    <div v-for="round in rounds" :key="round.id" class="round-table">
-                        <h3
-                            :data-cy="round.name.toLowerCase().replace(/\s+/g, '_')"
-                        >{{ round.formatted_name }}</h3>
-                        <table>
+                <!-- Standing Accordion -->
+                <div class="accordion">
+                    <button
+                        class="accordion-button"
+                        data-cy="standing-accordion-button"
+                        @click="toggleAccordion('standing')"
+                    >
+                        Standing
+                    </button>
+                    <div
+                        class="accordion-content"
+                        v-show="activeAccordion === 'standing'"
+                        data-cy="standing-accordion-content"
+                    >
+                        <h3>Standing</h3>
+                        <table class="ranking-table">
                             <thead>
                                 <tr>
-                                    <th>White Player</th>
-                                    <th>Result</th>
-                                    <th>Black Player</th>
-                                    <th v-if="isLoggedIn">Result (Admin)</th>
+                                    <th>Rank</th>
+                                    <th>Player</th>
+                                    <!-- Generar dinámicamente las columnas según rankingList -->
+                                    <th v-for="field in tournament.rankingList" :key="field">
+                                        {{ getRankingHeader(field) }}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
-                                    v-for="game in gamesByRound[round.id] || []"
-                                    :key="game.id"
-                                    :data-cy="`game_${round.number}_${game.count}`"
-                                >
-                                    <td>{{ game.white_player_name }}</td>
-                                    <td>
-                                        <!-- Mostrar un campo de texto si el torneo es de tipo LIC y el resultado no está bloqueado -->
-                                        <template v-if="tournament.board_type === 'LIC'">
-                                            <template v-if="!game.resultLocked">
-                                                <input
-                                                    type="text"
-                                                    v-model="game.lichessGameID"
-                                                    placeholder="type gameID"
-                                                    :data-cy="`input-${round.number}-${game.count}`"
-                                                />
-                                                <button
-                                                    @click="submitLichessGameID(game)"
-                                                    :data-cy="`button-${round.number}-${game.count}`"
-                                                >
-                                                    <i class="bi bi-send" />
-                                                </button>
-                                            </template>
-                                            <template v-else>
-                                                <div v-if="game.result === 'w'">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
-                                                </div>
-                                                <div v-else-if="game.result === 'b'">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
-                                                </div>
-                                                <div v-else-if="game.result === '='">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">1/2-1/2</p>
-                                                </div>
-                                                <div v-else>
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">*</p>
-                                                </div>
-                                            </template>
-                                        </template>
+                                <tr v-for="entry in ranking" :key="entry.id" :data-cy="`ranking-${entry.rank}`">
+                                    <td>{{ entry.rank }}</td>
+                                    <td>{{ entry.username }}</td>
+                                    <!-- Generar dinámicamente las celdas según rankingList -->
+                                    <td v-for="field in tournament.rankingList" :key="field">
+                                        {{ entry[field] || 0 }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                                        <!-- Mostrar el campo select si el torneo es de tipo OTB -->
-                                        <template v-else>
+                <!-- Pairings/Results Accordion -->
+                <div class="accordion">
+                    <button
+                        class="accordion-button"
+                        data-cy="pairings-accordion-button"
+                        @click="toggleAccordion('pairings')"
+                    >
+                        Pairings/Results
+                    </button>
+                    <div
+                        class="accordion-content"
+                        v-show="activeAccordion === 'pairings'"
+                        data-cy="pairings-accordion-content"
+                    >
+                        <h2>Pairings/Results</h2>
+                        <h3 class="tournament-type">{{ tournament.board_type === 'OTB' ? 'OTB' : 'LICHESS' }}</h3>
+                        <div v-if="tournament.board_type === 'LIC'">
+                            <p>
+                                Press <i class="bi bi-send" /> to update the game result. See the
+                                <router-link to="/faq" class="">FAQ</router-link> for more information.
+                            </p>
+                        </div>
+                        <div v-else>
+                            <p>
+                                The abbreviations used in the "result" column are explained at the end of the page.
+                                Press <i class="bi bi-send" /> to update the game result. See the
+                                <router-link to="/faq" class="">FAQ</router-link> for more information.
+                            </p>
+                        </div>
+
+                        <div v-for="round in rounds" :key="round.id" class="round-table">
+                            <h3 :data-cy="round.name.toLowerCase().replace(/\s+/g, '_')">{{ round.formatted_name }}</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>White Player</th>
+                                        <th>Result</th>
+                                        <th>Black Player</th>
+                                        <th v-if="isLoggedIn">Result (Admin)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="game in gamesByRound[round.id] || []"
+                                        :key="game.id"
+                                        :data-cy="`game_${round.number}_${game.count}`"
+                                    >
+                                        <td>{{ game.white_player_name }}</td>
+                                        <td>
+                                            <!-- Mostrar el campo select si el torneo es de tipo OTB -->
                                             <template v-if="!game.resultLocked">
                                                 <select
                                                     v-model="game.result"
@@ -126,48 +121,35 @@
                                                     <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
                                                 </div>
                                                 <div v-else-if="game.result === '='">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">1/2-1/2</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
                                                 </div>
                                                 <div v-else>
                                                     <p :data-cy="`input-${round.number}-${game.count}`">*</p>
                                                 </div>
                                             </template>
-                                        </template>
-                                    </td>
-                                    <td>{{ game.black_player_name }}</td>
-                                    <td v-if="isLoggedIn">
-                                        <select
-                                            v-model="game.adminResult"
-                                            :data-cy="`select-admin-${round.number}-${game.count}`"
-                                        >
-                                            <option value="w">White wins (1-0)</option>
-                                            <option value="b">Black wins (0-1)</option>
-                                            <option value="=">Draw (1/2-1/2)</option>
-                                            <option value="*">Unknown Result (*)</option>
-                                        </select>
-                                        <button
-                                            @click="handleAdminResultChange(game)"
-                                            :data-cy="`button-admin-${round.number}-${game.count}`"
-                                        >
-                                            <i class="bi bi-send" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal -->
-            <div v-if="showModal" class="modal-overlay">
-                <div class="modal">
-                    <h3>Confirm Result</h3>
-                    <p>Please enter the email used to join this tournament:</p>
-                    <input type="email" v-model="email" placeholder="Enter your email" />
-                    <div class="modal-actions">
-                        <button @click="validateAndConfirmResult">Confirm</button>
-                        <button @click="closeModal">Cancel</button>
+                                        </td>
+                                        <td>{{ game.black_player_name }}</td>
+                                        <td v-if="isLoggedIn">
+                                            <select
+                                                v-model="game.adminResult"
+                                                :data-cy="`select-admin-${round.number}-${game.count}`"
+                                            >
+                                                <option value="w">White wins (1-0)</option>
+                                                <option value="b">Black wins (0-1)</option>
+                                                <option value="=">Draw (1/2-1/2)</option>
+                                                <option value="*">Unknown Result (*)</option>
+                                            </select>
+                                            <button
+                                                @click="handleAdminResultChange(game)"
+                                                :data-cy="`button-admin-${round.number}-${game.count}`"
+                                            >
+                                                <i class="bi bi-send" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,25 +158,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useTokenStore } from '@/stores/token';
 import { computed } from 'vue';
 
-const tournament = ref(null)
-const rounds = ref([])
-const gamesByRound = ref({})
-const ranking = ref([])
-const loading = ref(true)
-const error = ref(null)
-const showModal = ref(false)
-const email = ref('')
-const selectedGame = ref(null)
+const tournament = ref(null);
+const rounds = ref([]);
+const gamesByRound = ref({});
+const ranking = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const showModal = ref(false);
+const email = ref('');
+const selectedGame = ref(null);
+const activeAccordion = ref('pairings'); // Por defecto, abre el acordeón de Pairings/Results
 
-const route = useRoute()
+const route = useRoute();
 
 const tokenStore = useTokenStore();
 const isLoggedIn = computed(() => tokenStore.token !== null);
+
+function toggleAccordion(section) {
+    activeAccordion.value = activeAccordion.value === section ? null : section;
+}
 
 async function fetchTournament() {
     const id = route.query.id;
@@ -475,6 +462,15 @@ async function submitLichessGameID(game) {
     }
 }
 
+function getRankingHeader(field) {
+    const headers = {
+        PS: 'Points',
+        WI: 'Wins',
+        BT: 'Black Times',
+    };
+    return headers[field] || field;
+}
+
 onMounted(async () => {
     try {
         await fetchTournament()
@@ -635,5 +631,33 @@ button:hover {
 select {
     z-index: 10; /* Asegúrate de que los selectores estén por encima de otros elementos */
     position: relative; /* Asegura que el selector no sea afectado por contenedores padres */
+}
+
+/* Accordion styles */
+.accordion {
+    margin-bottom: 1rem;
+}
+
+.accordion-button {
+    width: 100%;
+    text-align: left;
+    padding: 1rem;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    border-radius: 4px;
+}
+
+.accordion-button:hover {
+    background-color: #1a252f;
+}
+
+.accordion-content {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
 }
 </style>
