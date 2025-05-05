@@ -74,35 +74,27 @@
                                                     type="text"
                                                     v-model="game.lichessGameID"
                                                     placeholder="type gameID"
+                                                    :data-cy="`input-${round.number}-${game.count}`"
                                                 />
-                                                <button @click="submitLichessGameID(game)">
+                                                <button
+                                                    @click="submitLichessGameID(game)"
+                                                    :data-cy="`button-${round.number}-${game.count}`"
+                                                >
                                                     <i class="bi bi-send" />
                                                 </button>
                                             </template>
                                             <template v-else>
                                                 <div v-if="game.result === 'w'">
-                                                    <p>1-0</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
                                                 </div>
                                                 <div v-else-if="game.result === 'b'">
-                                                    <p>0-1</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
                                                 </div>
                                                 <div v-else-if="game.result === '='">
-                                                    <p>1/2-1/2</p>
-                                                </div>
-                                                <div v-else-if="game.result === '*' || !game.resultLocked">
-                                                    <!-- Mostrar el selector si el resultado es "*" y no está bloqueado -->
-                                                    <select v-model="game.result">
-                                                        <option value="w">White wins (1-0)</option>
-                                                        <option value="b">Black wins (0-1)</option>
-                                                        <option value="=">Draw (1/2-1/2)</option>
-                                                        <option value="*">Unknown Result (*)</option>
-                                                    </select>
-                                                    <button @click="promptConfirmGameResult(game)">
-                                                        <i class="bi bi-send" />
-                                                    </button>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">1/2-1/2</p>
                                                 </div>
                                                 <div v-else>
-                                                    <p>*</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">*</p>
                                                 </div>
                                             </template>
                                         </template>
@@ -110,53 +102,55 @@
                                         <!-- Mostrar el campo select si el torneo es de tipo OTB -->
                                         <template v-else>
                                             <template v-if="!game.resultLocked">
-                                                <select v-model="game.result">
+                                                <select
+                                                    v-model="game.result"
+                                                    :data-cy="`select-${round.number}-${game.count}`"
+                                                >
                                                     <option value="w">White wins (1-0)</option>
                                                     <option value="b">Black wins (0-1)</option>
                                                     <option value="=">Draw (1/2-1/2)</option>
                                                     <option value="*">Unknown Result (*)</option>
                                                 </select>
-                                                <button @click="promptConfirmGameResult(game)">
+                                                <button
+                                                    @click="promptConfirmGameResult(game)"
+                                                    :data-cy="`button-${round.number}-${game.count}`"
+                                                >
                                                     <i class="bi bi-send" />
                                                 </button>
                                             </template>
                                             <template v-else>
                                                 <div v-if="game.result === 'w'">
-                                                    <p>1-0</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
                                                 </div>
                                                 <div v-else-if="game.result === 'b'">
-                                                    <p>0-1</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
                                                 </div>
                                                 <div v-else-if="game.result === '='">
-                                                    <p>1/2-1/2</p>
-                                                </div>
-                                                <div v-else-if="game.result === '*' || !game.resultLocked">
-                                                    <!-- Mostrar el selector si el resultado es "*" y no está bloqueado -->
-                                                    <select v-model="game.result">
-                                                        <option value="w">White wins (1-0)</option>
-                                                        <option value="b">Black wins (0-1)</option>
-                                                        <option value="=">Draw (1/2-1/2)</option>
-                                                        <option value="*">Unknown Result (*)</option>
-                                                    </select>
-                                                    <button @click="promptConfirmGameResult(game)">
-                                                        <i class="bi bi-send" />
-                                                    </button>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">1/2-1/2</p>
                                                 </div>
                                                 <div v-else>
-                                                    <p>*</p>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">*</p>
                                                 </div>
                                             </template>
                                         </template>
                                     </td>
                                     <td>{{ game.black_player_name }}</td>
                                     <td v-if="isLoggedIn">
-                                        <select v-model="game.adminResult">
+                                        <select
+                                            v-model="game.adminResult"
+                                            :data-cy="`select-admin-${round.number}-${game.count}`"
+                                        >
                                             <option value="w">White wins (1-0)</option>
                                             <option value="b">Black wins (0-1)</option>
                                             <option value="=">Draw (1/2-1/2)</option>
-                                            <option value="*">Unknown Result (*)</option> <!-- Nueva opción -->
+                                            <option value="*">Unknown Result (*)</option>
                                         </select>
-                                        <button @click="handleAdminResultChange(game)"><i class="bi bi-send" /></button>
+                                        <button
+                                            @click="handleAdminResultChange(game)"
+                                            :data-cy="`button-admin-${round.number}-${game.count}`"
+                                        >
+                                            <i class="bi bi-send" />
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -244,6 +238,7 @@ async function fetchRounds() {
     gamesByRound.value = data.reduce((acc, round) => {
         acc[round.id] = round.games.map(game => {
             count++;
+            console.log(`Game result for round ${round.number}, game ${game.count}:`, game.result);
             return {
                 id: game.id,
                 count: count % ((rounds.value.length + 1) / 2) + 1,
@@ -537,6 +532,7 @@ th, td {
 
 .round-table {
     margin-top: 2rem;
+    overflow: visible; /* Asegúrate de que las tablas no recorten contenido */
 }
 
 /* New styles for layout */
@@ -554,7 +550,7 @@ th, td {
 .rounds-section {
     flex: 2;
     max-width: 60%;
-    overflow-y: auto;
+    overflow-y: visible; /* Cambiar de auto a visible para evitar recortes */
 }
 
 /* Modal styles */
@@ -627,10 +623,17 @@ button {
     border: 1px solid black; /* Agrega un borde negro */
     border-radius: 4px;
     cursor: pointer;
+    z-index: 10; /* Asegúrate de que los botones estén por encima de otros elementos */
+    position: relative;
 }
 
 button:hover {
     background-color: #3d8bd4;
     color: white; /* Cambia el color del texto al pasar el mouse */
+}
+
+select {
+    z-index: 10; /* Asegúrate de que los selectores estén por encima de otros elementos */
+    position: relative; /* Asegura que el selector no sea afectado por contenedores padres */
 }
 </style>
