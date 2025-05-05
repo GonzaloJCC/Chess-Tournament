@@ -204,7 +204,7 @@ async function fetchRounds() {
         throw new Error('Failed to fetch rounds');
     }
     let data = await res.json();
-    
+
     /* Convert "Round 1" in "round_001" */
     let count = 0;
     data.forEach(item => {
@@ -212,7 +212,7 @@ async function fetchRounds() {
             return num.padStart(3, '0');
         });
         item.number = ++count;
-    })
+    });
 
     rounds.value = data;
 
@@ -223,18 +223,18 @@ async function fetchRounds() {
             return {
                 id: game.id,
                 count: count % ((rounds.value.length + 1) / 2) + 1,
-                white_player_name: game.white_player_name,
-                black_player_name: game.black_player_name,
+                white_player_name: game.white_player_name || game.white_lichess_username || "Unknown", // Prioriza el nombre o el username de Lichess
+                black_player_name: game.black_player_name || game.black_lichess_username || "Unknown", // Prioriza el nombre o el username de Lichess
                 white_player_email: game.white_player_email,
                 black_player_email: game.black_player_email,
                 result: game.result,
                 lichessGameID: '', // Nuevo campo para almacenar el gameID de LIC
                 adminResult: '', // Nuevo campo para el selector Admin
-                status: game.finished ? 'Finished' : 'Ongoing',
+                status: game.finished ? "Finished" : "Ongoing",
                 emailInput: '',
                 emailValidated: false,
                 resultLocked: game.finished, // Sincroniza con el campo "finished" del backend
-            }
+            };
         });
         return acc;
     }, {});
