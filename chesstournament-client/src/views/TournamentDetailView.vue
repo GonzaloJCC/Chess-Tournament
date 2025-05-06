@@ -113,8 +113,22 @@
                                                         <i class="bi bi-send" />
                                                     </button>
                                                 </template>
-                                                <template v-else>
+                                                <!-- <template v-else>
                                                     <p :data-cy="`input-${round.number}-${game.count}`">{{ game.result || "*" }}</p>
+                                                </template> -->
+                                                <template v-else>
+                                                    <div v-if="game.result === 'w'">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
+                                                    </div>
+                                                    <div v-else-if="game.result === 'b'">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
+                                                    </div>
+                                                    <div v-else-if="game.result === '='">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
+                                                    </div>
+                                                    <div v-else>
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">*</p>
+                                                    </div>
                                                 </template>
                                             </template>
 
