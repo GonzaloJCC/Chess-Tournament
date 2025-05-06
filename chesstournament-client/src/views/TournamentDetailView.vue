@@ -136,10 +136,10 @@
                                                         v-model="game.result"
                                                         :data-cy="`select-${round.number}-${game.count}`"
                                                     >
-                                                        <option value="w" data-cy="White wins (1-0)">White wins (1-0)</option>
-                                                        <option value="b" data-cy="Black wins (0-1)">Black wins (0-1)</option>
-                                                        <option value="=" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
-                                                        <option value="*" data-cy="Unknown Result (*)">Unknown Result (*)</option>
+                                                        <option value="White wins (1-0)" data-cy="White wins (1-0)">White wins (1-0)</option>
+                                                        <option value="Black wins (0-1)" data-cy="Black wins (0-1)">Black wins (0-1)</option>
+                                                        <option value="Draw (1/2-1/2)" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
+                                                        <option value="Unknown Result (*)" data-cy="Unknown Result (*)">Unknown Result (*)</option>
                                                     </select>
                                                     <button
                                                         @click="promptConfirmGameResult(game)"
@@ -170,10 +170,10 @@
                                                 v-model="game.adminResult"
                                                 :data-cy="`select-admin-${round.number}-${game.count}`"
                                             >
-                                                <option value="w" data-cy="White wins (1-0)">White wins (1-0)</option>
-                                                <option value="b" data-cy="Black wins (0-1)">Black wins (0-1)</option>
-                                                <option value="=" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
-                                                <option value="*" data-cy="Unknown Result (*)">Unknown Result (*)</option>
+                                                    <option value="White wins (1-0)" data-cy="White wins (1-0)">White wins (1-0)</option>
+                                                    <option value="Black wins (0-1)" data-cy="Black wins (0-1)">Black wins (0-1)</option>
+                                                    <option value="Draw (1/2-1/2)" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
+                                                    <option value="Unknown Result (*)" data-cy="Unknown Result (*)">Unknown Result (*)</option>
                                             </select>
                                             <button
                                                 @click="handleAdminResultChange(game)"
@@ -337,6 +337,15 @@ async function promptConfirmGameResult(game) {
         return;
     }
 
+    if (game.result === "White wins (1-0)")
+            game.result = "w";
+        else if (game.result === "Black wins (0-1)") 
+           game.result = "b";
+        else if (game.result === "Draw (1/2-1/2)") 
+            game.result = "=";
+        else
+            game.result = "*";
+
     const whitePlayerEmail = game.white_player_email;
     const blackPlayerEmail = game.black_player_email;
 
@@ -418,6 +427,15 @@ async function handleAdminResultChange(game) {
             console.error("Token is missing.");
             return;
         }
+        if (game.adminResult === "White wins (1-0)")
+            game.adminResult = "w";
+        else if (game.adminResult === "Black wins (0-1)") 
+           game.adminResult = "b";
+        else if (game.adminResult === "Draw (1/2-1/2)") 
+            game.adminResult = "=";
+        else
+            game.adminResult = "*";
+        
 
         const isUnknownResult = game.adminResult === "*";
 

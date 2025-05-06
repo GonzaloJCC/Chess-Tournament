@@ -79,6 +79,7 @@ jrcuesta, jrcuesta@example.com
       headerOTB + players
     ); //add tournament name, different for each test.
 
+    cy.wait(4000);
     // Go to main page and...
     cy.visit("/");
 
@@ -97,6 +98,7 @@ jrcuesta, jrcuesta@example.com
         .should("be.visible") // Ensure the element is visible
         .select(result, { force: true });
       // check we have selected the right result
+      cy.wait(2000);
       cy.get(`[data-cy=select-${roundN}-${gameN}]`).should(
         "have.value",
         result
@@ -133,6 +135,7 @@ jrcuesta, jrcuesta@example.com
       .should("be.visible")
       .click({ force: true });
     // check ranking
+    cy.wait(5000);
     rankings.forEach((tuple, index) => {
       const [name, points, black, wins] = tuple; // Destructure the tuple
       cy.get(`[data-cy=ranking-${index + 1}]`)
@@ -143,7 +146,7 @@ jrcuesta, jrcuesta@example.com
         .should("contain.text", black)
         .should("contain.text", wins);
     }); // end forEach
-
+    cy.wait(4000);
     // login
     cy.visit("/"); // login is lost at this point
     cy.login(Cypress.env("username"), Cypress.env("password"));
@@ -170,6 +173,7 @@ jrcuesta, jrcuesta@example.com
       .scrollIntoView()
       .should("be.visible")
       .click({ force: true });
+    cy.wait(5000);
     // check ranking after modification
     rankings2.forEach((tuple, index) => {
       const [name, points, black, wins] = tuple; // Destructure the tuple

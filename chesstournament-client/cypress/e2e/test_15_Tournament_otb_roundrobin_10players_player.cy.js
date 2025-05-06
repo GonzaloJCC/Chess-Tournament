@@ -152,6 +152,7 @@ jrcuesta, jrcuesta@example.com
       // get row from games table
       const [white, , , result, roundN, gameN] = tuple; // Destructure the tuple
       // select input widget and select game result
+      cy.wait(500);
       cy.get(`[data-cy=select-${roundN}-${gameN}]`)
         // Scroll the element into view
         .scrollIntoView({ offset: { top: -200, left: 0 } })
@@ -169,13 +170,14 @@ jrcuesta, jrcuesta@example.com
         cy.log(white + "@example.com");
         cy.stub(win, "prompt").returns(white + "@example.com");
       });
-
+      cy.wait(250);
       // click and send to server
       cy.get(`[data-cy=button-${roundN}-${gameN}]`)
         // Click the button, forcing the action if necessary
         .click({ force: true });
       // check results
       let _result = result_to_input[result];
+      cy.wait(250);
       cy.get(`[data-cy=input-${roundN}-${gameN}]`).should(
         "contain.text",
         `${_result}`

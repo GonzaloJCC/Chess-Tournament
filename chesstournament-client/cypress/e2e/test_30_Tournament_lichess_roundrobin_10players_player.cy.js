@@ -2,15 +2,6 @@
 // Create tournament, add players, add games, check ranking
 // games are played in lichess
 describe("Round Robing 10 players tournament Lichess", () => {
-  // nothing to change below this line
-
-  // follow alist with the games
-  // the first element is the white player
-  // the second element is the black player
-  // the third element is the lichess game ID
-  // the fourth element is the result
-  // the fifth element is the round
-  // the sixth element is the game number (not id)
   let w = "1-0";
   let b = "0-1";
   let d = "½-½";
@@ -69,11 +60,6 @@ describe("Round Robing 10 players tournament Lichess", () => {
     ["Philippe2020", "soria49", "FG72LOJK", b, 9, 4],
     ["eaffelix", "ertopo", "hHq30XSt", d, 9, 5],
   ];
-  // row 1 lichess username
-  // row 2 points
-  // row 3 SB
-  // row 4 black wins
-  // row 5 wins
   const rankings = [
     ["eaffelix", "7.5", "5.00", "7.00"],
     ["rmarabini", "6.5", "4.00", "6.00"],
@@ -88,18 +74,6 @@ describe("Round Robing 10 players tournament Lichess", () => {
   ];
 
   const headerLIC = "lichess_username\n";
-  const headerOTB = "name, email\n";
-  const playersOTB = `ertopo, ertopo@example.com
-soria49, soria49@example.com
-zaragozana, zaragozana@example.com
-Clavada, Clavada@example.com
-rmarabini, rmarabini@example.com
-jpvalle, jpvalle@example.com
-oliva21, oliva21@example.com
-Philippe2020, Philippe2020@example.com
-eaffelix, eaffelix@example.com
-jrcuesta, jrcuesta@example.com
-`;
   const playersLIC = `ertopo
 soria49
 zaragozana
@@ -112,19 +86,6 @@ eaffelix
 jrcuesta
 `;
 
-  // rounds pairing should be as follows:
-  // Round Robin table for 9 or 10 players:
-  // 1 -> ertopo, etc
-  // Rd 1: 1-10, 2-9, 3-8, 4-7, 5-6.
-  // Rd 2: 10-6, 7-5, 8-4, 9-3, 1-2.
-  // Rd 3: 2-10, 3-1, 4-9, 5-8, 6-7.
-  // Rd 4: 10-7, 8-6, 9-5, 1-4, 2-3.
-  // Rd 5: 3-10, 4-2, 5-1, 6-9, 7-8.
-  // Rd 6: 10-8, 9-7, 1-6, 2-5, 3-4.
-  // Rd 7: 4-10, 5-3, 6-2, 7-1, 8-9.
-  // Rd 8: 10-9, 1-8, 2-7, 3-6, 4-5.
-  // Rd 9: 5-10, 6-4, 7-3, 8-2, 9-1.
-
   it("round Robin Lichess tournament", () => {
     cy.delete_all_tournaments();
     cy.delete_all_players();
@@ -134,53 +95,60 @@ jrcuesta
       "SR", // Single Round Robin
       tournament_name,
       headerLIC + playersLIC
-    ); //add tournament name, different for each test.
+    );
 
     // Go to main page and...
     cy.visit("/");
-    // cy.wait(2000)
+    cy.wait(2000); // Espera para asegurarte de que la página principal se cargue completamente
 
     // ... select tournament
-    cy.get("[data-cy=" + tournament_name + "]").click();
+    cy.get("[data-cy=" + tournament_name + "]")
+      .should("be.visible")
+      .click();
+    cy.wait(2000); // Espera para asegurarte de que la página del torneo se cargue completamente
 
     // Now we are in the games page
     games.forEach((tuple, index) => {
-      // get row from games table
-      const [white, black, gameID, result, roundN, gameN] = tuple; // Destructure the tuple
+      const [white, black, gameID, result, roundN, gameN] = tuple;
 
       // select input widget and type game ID
+      cy.wait(1000); // Espera antes de interactuar con el input
       cy.get(`[data-cy=input-${roundN}-${gameN}]`)
-        .scrollIntoView({ offset: { top: -150, left: 0 } }) // Scroll the element into view
-        .should("be.visible") // Ensure the element is visible
-        .clear({ force: true }) // Clear the input field, forcing the action if necessary
-        .type(gameID, { force: true }); // Type into the input field, forcing the action if necessary
-      // click
-      // cy.wait(500)
+        .scrollIntoView({ offset: { top: -150, left: 0 } })
+        .should("be.visible")
+        .clear({ force: true })
+        .type(gameID, { force: true });
+
+      // click the button
+      cy.wait(500); // Espera antes de hacer clic en el botón
       cy.get(`[data-cy=button-${roundN}-${gameN}]`)
-        //.scrollIntoView( {offset: { top: -50, left: 0 }})           // Scroll the element into view
-        //.should('be.visible')       // Ensure the element is visible
-        .click({ force: true }); // Click the button, forcing the action if necessary
+        .click({ force: true });
+
       // check results
+      cy.wait(1000); // Espera antes de verificar el resultado
       cy.get(`[data-cy=input-${roundN}-${gameN}]`).should(
         "contain.text",
         `${result}`
       );
-    }); // end forEach
+    });
+
     // select ranking piano
     cy.get("[data-cy=standing-accordion-button]")
       .scrollIntoView()
       .should("be.visible")
       .click({ force: true });
+    cy.wait(2000); // Espera para asegurarte de que el ranking se cargue completamente
+
     // check ranking
     rankings.forEach((tuple, index) => {
-      const [name, points, black, wins] = tuple; // Destructure the tuple
+      const [name, points, black, wins] = tuple;
       cy.get(`[data-cy=ranking-${index + 1}]`)
-        .scrollIntoView() // Scroll the element into view
-        .should("be.visible") // Ensure the element is visible
+        .scrollIntoView()
+        .should("be.visible")
         .should("contain.text", name)
         .should("contain.text", points)
         .should("contain.text", black)
         .should("contain.text", wins);
-    }); // end forEach
+    });
   });
 });

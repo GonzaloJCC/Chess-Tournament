@@ -85,6 +85,7 @@ jrcuesta
       headerLIC + playersLIC
     ); //add tournament name, different for each test.
     // Go to main page
+    cy.wait(7000);
     cy.visit("/");
 
     // select tournament
@@ -116,6 +117,7 @@ jrcuesta
     cy.get('[data-cy="select-admin-1-1"]').should("not.exist");
     // check results
     // select ranking piano
+    cy.wait(4000);
     cy.get("[data-cy=standing-accordion-button]")
       .scrollIntoView()
       .should("be.visible")
@@ -133,6 +135,7 @@ jrcuesta
     }); // end forEach
 
     // login
+    cy.wait(4000);
     cy.visit("/"); // login is lost at this point
     cy.login(Cypress.env("username"), Cypress.env("password"));
     // select tournament
@@ -159,6 +162,7 @@ jrcuesta
       .scrollIntoView()
       .should("be.visible")
       .click({ force: true });
+    cy.wait(4000);
     // check ranking after modification
     rankings2.forEach((tuple, index) => {
       const [name, points, black, wins] = tuple; // Destructure the tuple
