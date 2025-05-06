@@ -363,11 +363,13 @@ class UpdateLichessGameAPIView(APIView):
             )
 
         game.result = game_result
+        
         game.finished = True
         game.save()
         return Response(
             {
                 "result": True,
+                "game_result": game_result,
             },
             status=status.HTTP_200_OK,
         )

@@ -113,9 +113,6 @@
                                                         <i class="bi bi-send" />
                                                     </button>
                                                 </template>
-                                                <!-- <template v-else>
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">{{ game.result || "*" }}</p>
-                                                </template> -->
                                                 <template v-else>
                                                     <div v-if="game.result === 'w'">
                                                         <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
@@ -486,10 +483,11 @@ async function submitLichessGameID(game) {
         }
 
         const responseData = await res.json();
+        console.log("Response from backend:", responseData);
 
         // Actualizar el estado del juego localmente
-        game.result = responseData.result; // Asigna el resultado directamente desde el backend
-        game.resultLocked = true; // Bloquea el resultado
+        game.result = responseData.game_result; // Usar el resultado devuelto por el backend
+        game.resultLocked = true; // Bloquear el resultado inmediatamente
         game.status = "Finished"; // Cambia el estado del juego
         alert("Game ID submitted successfully!");
 
