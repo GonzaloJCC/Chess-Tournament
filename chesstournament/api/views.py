@@ -286,7 +286,7 @@ class GetRoundResults(APIView):
         round_results = []
 
         for round_obj in rounds:
-            games = Game.objects.filter(round=round_obj).all()
+            games = Game.objects.filter(round=round_obj).order_by('id').all()
             games_data = []
 
             for game in games:
