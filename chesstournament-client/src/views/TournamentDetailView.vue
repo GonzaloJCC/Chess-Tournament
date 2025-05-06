@@ -97,37 +97,60 @@
                                     >
                                         <td>{{ game.white_player_name }}</td>
                                         <td>
-                                            <!-- Mostrar el campo select si el torneo es de tipo OTB -->
-                                            <template v-if="!game.resultLocked">
-                                                <select
-                                                    v-model="game.result"
-                                                    :data-cy="`select-${round.number}-${game.count}`"
-                                                >
-                                                    <option value="w">White wins (1-0)</option>
-                                                    <option value="b">Black wins (0-1)</option>
-                                                    <option value="=">Draw (1/2-1/2)</option>
-                                                    <option value="*">Unknown Result (*)</option>
-                                                </select>
-                                                <button
-                                                    @click="promptConfirmGameResult(game)"
-                                                    :data-cy="`button-${round.number}-${game.count}`"
-                                                >
-                                                    <i class="bi bi-send" />
-                                                </button>
+                                            <!-- Mostrar el campo de texto si el torneo es de tipo LIC -->
+                                            <template v-if="tournament.board_type === 'LIC'">
+                                                <template v-if="!game.resultLocked">
+                                                    <input
+                                                        type="text"
+                                                        v-model="game.lichessGameID"
+                                                        placeholder="type gameID"
+                                                        :data-cy="`input-${round.number}-${game.count}`"
+                                                    />
+                                                    <button
+                                                        @click="submitLichessGameID(game)"
+                                                        :data-cy="`button-${round.number}-${game.count}`"
+                                                    >
+                                                        <i class="bi bi-send" />
+                                                    </button>
+                                                </template>
+                                                <template v-else>
+                                                    <p :data-cy="`input-${round.number}-${game.count}`">{{ game.result || "*" }}</p>
+                                                </template>
                                             </template>
+
+                                            <!-- Mostrar el campo select si el torneo es de tipo OTB -->
                                             <template v-else>
-                                                <div v-if="game.result === 'w'">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
-                                                </div>
-                                                <div v-else-if="game.result === 'b'">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
-                                                </div>
-                                                <div v-else-if="game.result === '='">
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
-                                                </div>
-                                                <div v-else>
-                                                    <p :data-cy="`input-${round.number}-${game.count}`">*</p>
-                                                </div>
+                                                <template v-if="!game.resultLocked">
+                                                    <select
+                                                        v-model="game.result"
+                                                        :data-cy="`select-${round.number}-${game.count}`"
+                                                    >
+                                                        <option value="w" data-cy="White wins (1-0)">White wins (1-0)</option>
+                                                        <option value="b" data-cy="Black wins (0-1)">Black wins (0-1)</option>
+                                                        <option value="=" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
+                                                        <option value="*" data-cy="Unknown Result (*)">Unknown Result (*)</option>
+                                                    </select>
+                                                    <button
+                                                        @click="promptConfirmGameResult(game)"
+                                                        :data-cy="`button-${round.number}-${game.count}`"
+                                                    >
+                                                        <i class="bi bi-send" />
+                                                    </button>
+                                                </template>
+                                                <template v-else>
+                                                    <div v-if="game.result === 'w'">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
+                                                    </div>
+                                                    <div v-else-if="game.result === 'b'">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
+                                                    </div>
+                                                    <div v-else-if="game.result === '='">
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
+                                                    </div>
+                                                    <div v-else>
+                                                        <p :data-cy="`input-${round.number}-${game.count}`">*</p>
+                                                    </div>
+                                                </template>
                                             </template>
                                         </td>
                                         <td>{{ game.black_player_name }}</td>
@@ -136,10 +159,10 @@
                                                 v-model="game.adminResult"
                                                 :data-cy="`select-admin-${round.number}-${game.count}`"
                                             >
-                                                <option value="w">White wins (1-0)</option>
-                                                <option value="b">Black wins (0-1)</option>
-                                                <option value="=">Draw (1/2-1/2)</option>
-                                                <option value="*">Unknown Result (*)</option>
+                                                <option value="w" data-cy="White wins (1-0)">White wins (1-0)</option>
+                                                <option value="b" data-cy="Black wins (0-1)">Black wins (0-1)</option>
+                                                <option value="=" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
+                                                <option value="*" data-cy="Unknown Result (*)">Unknown Result (*)</option>
                                             </select>
                                             <button
                                                 @click="handleAdminResultChange(game)"
