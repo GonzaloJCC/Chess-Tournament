@@ -26,6 +26,7 @@
                                 <tr>
                                     <th>Rank</th>
                                     <th>Player</th>
+                                    <th>Score</th> <!-- Nueva columna para Points -->
                                     <!-- Generar dinámicamente las columnas según rankingList -->
                                     <th v-for="field in tournament.rankingList" :key="field">
                                         {{ getRankingHeader(field) }}
@@ -36,9 +37,10 @@
                                 <tr v-for="entry in ranking" :key="entry.id" :data-cy="`ranking-${entry.rank}`">
                                     <td>{{ entry.rank }}</td>
                                     <td>{{ entry.username }}</td>
+                                    <td>{{ entry.score || 0 }}</td> <!-- Nueva celda para Points -->
                                     <!-- Generar dinámicamente las celdas según rankingList -->
                                     <td v-for="field in tournament.rankingList" :key="field">
-                                        {{ entry[field] || 0 }}
+                                        {{ entry[field] || 0.00 }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -268,8 +270,8 @@ async function fetchRanking() {
             username: entry.username,
             score: entry.score,
             rank: entry.rank,
-            WI: entry.WI,
-            BT: entry.BT,
+            WI: entry.WI.toFixed(2),
+            BT: entry.BT.toFixed(2),
         }));
     } catch (error) {
         console.error('Error fetching ranking:', error);

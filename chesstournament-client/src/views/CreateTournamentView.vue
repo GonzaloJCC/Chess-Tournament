@@ -173,8 +173,8 @@
   const adminUpdate        = ref(false);
   const pairingSystem      = ref('SR');
   const boardType          = ref('LIC');
-  const winPoints          = ref(2.0);
-  const drawPoints         = ref(1.0);
+  const winPoints          = ref(1.0);
+  const drawPoints         = ref(0.5);
   const losePoints         = ref(0.0);
   const tournamentCategory = ref('CL');
   const playersCsv         = ref('');
