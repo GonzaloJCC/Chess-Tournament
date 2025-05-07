@@ -313,19 +313,6 @@ async function fetchRanking() {
     }
 }
 
-function openEmailModal(game) {
-    console.log('Opening modal for game:', game);
-    selectedGame.value = game;
-    showModal.value = true;
-    console.log('Modal state:', showModal.value); // Verifica si cambia a true
-}
-
-function closeModal() {
-    showModal.value = false;
-    email.value = '';
-    selectedGame.value = null;
-}
-
 async function promptConfirmGameResult(game) {
     const userEmail = window.prompt(
         `Please enter the email used to join this tournament:`
@@ -379,45 +366,6 @@ async function promptConfirmGameResult(game) {
     } else {
         console.log("Email does not match with any player in the game.");
         alert("Email does not match with any player in the game.");
-    }
-}
-
-async function confirmAdminResult(game) {
-    try {
-        if (!tokenStore.token) {
-            console.error("Token is missing.");
-            alert("You must be logged in to perform this action.");
-            return;
-        }
-
-        console.log("Token being sent:", tokenStore.token);
-
-        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}admin_update_game/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Token ${tokenStore.token}`,
-            },
-            body: JSON.stringify({
-                game_id: game.id,
-                otb_result: game.adminResult,
-            }),
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            console.error("Error response from backend:", errorData);
-            alert(`Error: ${errorData.message || "Failed to update game result"}`);
-            return;
-        }
-
-        game.result = game.adminResult;
-        game.resultLocked = true;
-
-        await fetchRanking();
-    } catch (error) {
-        console.error("Error updating admin game result:", error);
-        alert("An unexpected error occurred while updating the game result. Please try again.");
     }
 }
 
