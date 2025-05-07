@@ -473,6 +473,62 @@ class TournamentSerializerTest(TestCase):
         self.assertEqual(res["tournament_type"], TournamentType.ROUNDROBIN)
         self.assertEqual(res["rankingList"], [RankingSystem.BUCHHOLZ])
 
+    @tag("continua")
+    def test_create_tournament_with_players_and_ranking(self):
+        data = {
+            "name": "test12345",
+            "tournament_type": TournamentType.SWISS,
+            "tournament_speed": TournamentSpeed.CLASSICAL,
+            "board_type": TournamentBoardType.LICHESS,
+            "rankingList": ["WI", "BT"],
+            "players":
+            "lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana",
+        }
+
+        serializer = TournamentSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        tournament = serializer.save()
+
+        self.assertEqual(tournament.name, "test12345")
+
+        self.assertEqual(tournament.players.count(), 4)
+        self.assertTrue(
+            Player.objects.filter(lichess_username="rmarabini").exists()
+        )
+
+        self.assertEqual(tournament.rankingList.count(), 2)
+        self.assertTrue(tournament.rankingList.filter(value="WI").exists())
+        self.assertTrue(tournament.rankingList.filter(value="BT").exists())
+
+    @tag("continua")
+    def test_to_representation(self):
+        data = {
+            "name": "test12345",
+            "tournament_type": TournamentType.SWISS,
+            "tournament_speed": TournamentSpeed.CLASSICAL,
+            "board_type": TournamentBoardType.LICHESS,
+            "rankingList": ["WI", "BT", "NOP"],
+            "players":
+            "lichess_username\neaffelix\noliva21\n\n  \nrmarabini\nzaragozana",
+        }
+
+        serializer = TournamentSerializer(data=data)
+        self.assertFalse(serializer.is_valid(), serializer.errors)
+
+    @tag("continua")
+    def test_error_representation(self):
+        data = {
+            "name": "test12345",
+            "tournament_type": TournamentType.SWISS,
+            "tournament_speed": TournamentSpeed.CLASSICAL,
+            "board_type": TournamentBoardType.LICHESS,
+            "rankingList": ["WI", "BT", "NOP"],
+            "players":
+            "lichess_username\na, b, c\noliva21",
+        }
+
+        serializer = TournamentSerializer(data=data)
+        self.assertFalse(serializer.is_valid(), serializer.errors)
 
 ###########################################################################
 ###########################################################################
@@ -921,7 +977,7 @@ class GetRoundResultsAPIViewTest(TransactionTestCase):
             "players":
             "lichess_username\neaffelix\noliva21\nrmarabini\nzaragozana",
         }
-        response = self.client.post(URLTOURNAMENT, data)
+        response = self.client.post(URLCREATETOURNAMENT, data)
         tournament_id = response.data["id"]
         response = self.client.get(GETROUNDSRESULTS + f"{tournament_id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -297,12 +297,18 @@ class GetRoundResults(APIView):
                     "update_date": game.update_date,
                     "result": game.result,
                     "rankingOrder": game.rankingOrder,
-                    "white_player_name": game.white.name if game.white else "Unknown",
-                    "white_player_email": game.white.email if game.white else "Unknown",
-                    "black_player_name": game.black.name if game.black else "Unknown",
-                    "black_player_email": game.black.email if game.black else "Unknown",
-                    "white_lichess_username": game.white.lichess_username if game.white else "Unknown",
-                    "black_lichess_username": game.black.lichess_username if game.black else "Unknown",
+                    "white_player_name": game.white.name if game.white
+                    else "Unknown",
+                    "white_player_email": game.white.email if game.white
+                    else "Unknown",
+                    "black_player_name": game.black.name if game.black
+                    else "Unknown",
+                    "black_player_email": game.black.email if game.black
+                    else "Unknown",
+                    "white_lichess_username": game.white.lichess_username
+                    if game.white else "Unknown",
+                    "black_lichess_username": game.black.lichess_username
+                    if game.black else "Unknown",
                     "round": game.round.id,
                 })
 
@@ -363,7 +369,7 @@ class UpdateLichessGameAPIView(APIView):
             )
 
         game.result = game_result
-        
+
         game.finished = True
         game.save()
         return Response(
@@ -470,9 +476,9 @@ class AdminUpdateGameAPIView(APIView):
             )
 
         # Check if the user is an administrative user
-        tournament = game.round.tournament        
-        if (tournament.administrativeUser or tournament.only_administrative) and \
-            not request.user == tournament.administrativeUser:
+        tournament = game.round.tournament
+        if (tournament.administrativeUser or tournament.only_administrative) \
+                and not request.user == tournament.administrativeUser:
             return Response(
                 {
                     "result": False,

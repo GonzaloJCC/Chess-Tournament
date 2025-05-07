@@ -50,7 +50,7 @@ class TournamentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"Invalid ranking system values: {', '.join(invalid_values)}"
             )
-        
+
         # Assign the values into the database
         for value in values:
             search = RankingSystemClass.objects.filter(value=value)
