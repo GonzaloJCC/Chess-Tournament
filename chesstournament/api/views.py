@@ -471,11 +471,12 @@ class AdminUpdateGameAPIView(APIView):
 
         # Check if the user is an administrative user
         tournament = game.round.tournament        
-        if tournament.only_administrative and not request.user == tournament.administrativeUser:
+        if (tournament.administrativeUser or tournament.only_administrative) and \
+            not request.user == tournament.administrativeUser:
             return Response(
                 {
                     "result": False,
-                    "message": "Only the user that created"
+                    "message": "Only the user that create"
                                " the tournament can update it",
                 },
                 status=status.HTTP_403_FORBIDDEN,
