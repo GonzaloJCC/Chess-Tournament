@@ -67,7 +67,6 @@ class TournamentSerializer(serializers.ModelSerializer):
         # Add players
         if players_csv:
             players = players_csv.split("\n")
-            print(players)
             for player_entry in players[1:]:
                 player_entry = player_entry.strip()
                 if not player_entry:
