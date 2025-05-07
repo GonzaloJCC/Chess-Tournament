@@ -1,47 +1,52 @@
 <template>
-    <div class="tournaments">
-        <div class="tournament-content">
-            <div v-if="paginatedTournaments.length === 0">No tournaments available</div>
+  <div class="tournaments">
+    <div class="tournament-content">
+      <div v-if="paginatedTournaments.length === 0">
+        No tournaments available
+      </div>
 
-            <table v-else>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="tournament in paginatedTournaments" :key="tournament.id">
-                        <td
-                            :data-cy="tournament.name"
-                        >
-                            <router-link :to="{ name: 'tournamentdetail', query: { id: tournament.id } }">
-                                {{ tournament.name }}
-                            </router-link>
-                        </td>
-                        <td>{{ tournament.start_date }}</td>
-                    </tr>
-                </tbody>
-            </table>
+      <table v-else>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="tournament in paginatedTournaments"
+            :key="tournament.id"
+          >
+            <td
+              :data-cy="tournament.name"
+            >
+              <router-link :to="{ name: 'tournamentdetail', query: { id: tournament.id } }">
+                {{ tournament.name }}
+              </router-link>
+            </td>
+            <td>{{ tournament.start_date }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-            <div class="pagination">
-                <button
-                    @click="prevPage"
-                    :disabled="currentPage === 1"
-                    data-cy="previous-button"    
-                >
-                    Previous
-                </button>
-                <button
-                    @click="nextPage"
-                    :disabled="currentPage === totalPages"
-                    data-cy="next-button"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
+      <div class="pagination">
+        <button
+          :disabled="currentPage === 1"
+          data-cy="previous-button"
+          @click="prevPage"    
+        >
+          Previous
+        </button>
+        <button
+          :disabled="currentPage === totalPages"
+          data-cy="next-button"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -53,7 +58,7 @@ const pageSize = 5;
 
 const fetchTournaments = async () => {
     try {
-        let url = `${import.meta.env.VITE_DJANGOURL}tournaments/`;
+        let url = `${import.meta.env.VITE_DJANGOURL}/tournaments/`;
         const allTournaments = [];
 
         while (url) {

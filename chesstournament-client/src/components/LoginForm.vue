@@ -56,7 +56,7 @@
 <script setup>
   import { ref, computed } from 'vue';
   const emit = defineEmits(['confirm-form'])
-  const APIURL = import.meta.env.VITE_APIURL;
+  const APIURL = import.meta.env.VITE_DJANGOURL;
 
   /* NOTE: Object where the data will be saved */
   const user = ref({
@@ -106,7 +106,7 @@
 
     /* The data has been provided: request to API */
     try {
-      const response = await fetch(`${APIURL}/api/v1/token/login`, {
+      const response = await fetch(`${APIURL}/token/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

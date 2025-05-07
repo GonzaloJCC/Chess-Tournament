@@ -32,7 +32,7 @@ import { watch, ref } from 'vue';
 const props = defineProps({
 id:			      { type: String, required: true },
 label:		    { type: String, required: true },
-modelValue:	  { required: true },
+modelValue:	  { type: String, required: true },
 rows:			    { type: String, default: '4' },
 placeholder:  { type: String, default: '' },
 helpText: 	  { type: String, default: '' },

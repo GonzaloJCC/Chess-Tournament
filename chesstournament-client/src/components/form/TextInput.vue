@@ -17,7 +17,8 @@
       :data-cy="cypress"
     >
 
-    <div v-if="helpText"
+    <div
+      v-if="helpText"
       class="form-text fst-italic"
     >
       {{ helpText }}
@@ -32,7 +33,7 @@ import { watch, ref } from 'vue';
 const props = defineProps({
   id:			      { type: String, required: true },
   label:		    { type: String, required: true },
-  modelValue:	  { required: true },
+  modelValue:	  { type: String, required: true },
   type:			    { type: String, default: 'text' },
   step:         { type: String, default: undefined },
   placeholder:  { type: String, default: '' },

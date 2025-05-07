@@ -8,9 +8,9 @@
     </label>
 
     <select
+      :id="id"
       v-model="local_data"
       class="form-select"
-      :id="id"
       :data-cy="cypress"
     >
       <option
@@ -38,7 +38,7 @@ import { watch, ref } from 'vue';
 const props = defineProps({
   id:         { type: String, required: true },
   label:      { type: String, required: true },
-  modelValue: { required: true },
+  modelValue:	{ type: String, required: true },
   options:    { type: Array, default: () => []},
   helpText:   { type: String, default: undefined },
   cypress:    { type: String, default: undefined },

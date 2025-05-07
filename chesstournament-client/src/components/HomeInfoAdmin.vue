@@ -1,18 +1,22 @@
 <template>
-    <div class="info">
-        <p data-cy="admin-log">
-            Hello, you are logged in as an administrator. Remember, with great power comes great responsibility.
-        </p>
-        <p>
-            As an administrator, you can create tournaments and edit or update the results of games, rounds, and tournaments.
-        </p>
-        <p>
-            To create a new tournament, press the "Create Tournament" button. To edit or update games, rounds, or tournaments, select the desired tournament.
-        </p>
-        <router-link to="/createtournament" class="create-tournament-button" data-cy="create-Tournament-button">
-            Create Tournament
-        </router-link>
-    </div>
+  <div class="info">
+    <p data-cy="admin-log">
+      Hello, you are logged in as an administrator. Remember, with great power comes great responsibility.
+    </p>
+    <p>
+      As an administrator, you can create tournaments and edit or update the results of games, rounds, and tournaments.
+    </p>
+    <p>
+      To create a new tournament, press the "Create Tournament" button. To edit or update games, rounds, or tournaments, select the desired tournament.
+    </p>
+    <router-link
+      to="/createtournament"
+      class="create-tournament-button"
+      data-cy="create-Tournament-button"
+    >
+      Create Tournament
+    </router-link>
+  </div>
 </template>
 
 <script setup>

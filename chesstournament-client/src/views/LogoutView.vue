@@ -1,7 +1,9 @@
 <template>
   <div class="logout-wrapper">
     <div class="logout-box">
-      <h1 data-cy="logoutPage">Log Out</h1>
+      <h1 data-cy="logoutPage">
+        Log Out
+      </h1>
       <p>You will be redirected to home in 5 seconds.</p>
     </div>
   </div>

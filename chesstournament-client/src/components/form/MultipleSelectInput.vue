@@ -20,12 +20,12 @@
       class="form-check"
     >
       <input
+        :id="`${idPrefix}-option-${current.value.toLowerCase()}`"
         class="form-check-input"
         type="checkbox"
-        :id="`${idPrefix}-option-${current.value.toLowerCase()}`"
         :checked="local_data.includes(current.value)"
-        @change="onCheck(current.value, $event.target.checked)"
         :data-cy="cypress"
+        @change="onCheck(current.value, $event.target.checked)"
       >
 
       <label
@@ -57,7 +57,7 @@ const props = defineProps({
   idPrefix:   { type: String, required: true },
   title:      { type: String, default: undefined},
   label:      { type: String, default: undefined },
-  modelValue: { required: true },
+  modelValue:	{ type: String, required: true },
   options:    { type: Array, default: () => []},
   helpText:   { type: String, default: undefined },
   cypress:    { type: String, default: undefined },

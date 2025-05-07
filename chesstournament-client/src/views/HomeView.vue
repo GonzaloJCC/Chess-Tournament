@@ -1,16 +1,16 @@
 <template>
-    <div class="wrap-all-three">
-        <template v-if="isLoggedIn">
-            <HomeInfoAdmin />
-        </template>
-        <template v-else>
-            <HomeInfo />
-        </template>
-        <div class="bottom-row">
-            <HomeTournaments />
-            <HomeSearch />
-        </div>
+  <div class="wrap-all-three">
+    <template v-if="isLoggedIn">
+      <HomeInfoAdmin />
+    </template>
+    <template v-else>
+      <HomeInfo />
+    </template>
+    <div class="bottom-row">
+      <HomeTournaments />
+      <HomeSearch />
     </div>
+  </div>
 </template>
 
 <script setup>

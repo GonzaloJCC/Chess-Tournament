@@ -28,7 +28,7 @@ import { watch, ref } from 'vue';
 const props = defineProps({
   id:		  	  { type: String, required: true },
   label:		  { type: String, required: true },
-  modelValue:	{ required: true },
+  modelValue:	{ type: String, required: true },
   helpText: 	{ type: String, default: '' },
   cypress:    { type: String, default: undefined },
 });

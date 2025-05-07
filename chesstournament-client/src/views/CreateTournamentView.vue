@@ -189,7 +189,7 @@
   const router = useRouter();
 
   /* API URL */
-  const APIURL = import.meta.env.VITE_APIURL;
+  const APIURL = import.meta.env.VITE_DJANGOURL;
 
   /* Function to register the tournament */
   const registerTournament = async () => {
@@ -198,7 +198,7 @@
     /* Send the request to the API */
     try
     {
-      const result = await fetch(`${APIURL}/api/v1/tournament_create/`, {
+      const result = await fetch(`${APIURL}/tournament_create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

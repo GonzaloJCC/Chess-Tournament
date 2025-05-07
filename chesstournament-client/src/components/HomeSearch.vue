@@ -1,41 +1,59 @@
 <template>
-    <div class="search-box">
-        <div class="search-content">
-            <div class="search-input-container">
-                <input
-                    v-model="searchTerm"
-                    type="text"
-                    placeholder="Tournament"
-                    class="search-input"
-                    data-cy="input-search"
-                />
-                <button v-if="searchTerm" @click="clearSearch" class="clear-button">x</button>
-                <button @click="searchTournaments" class="search-button" data-cy="submit-search">Search</button>
-            </div>
+  <div class="search-box">
+    <div class="search-content">
+      <div class="search-input-container">
+        <input
+          v-model="searchTerm"
+          type="text"
+          placeholder="Tournament"
+          class="search-input"
+          data-cy="input-search"
+        >
+        <button
+          v-if="searchTerm"
+          class="clear-button"
+          @click="clearSearch"
+        >
+          x
+        </button>
+        <button
+          class="search-button"
+          data-cy="submit-search"
+          @click="searchTournaments"
+        >
+          Search
+        </button>
+      </div>
 
-            <table v-if="isTableVisible">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="tournament in filteredTournaments" :key="tournament.id">
-                        <td
-                            :data-cy="`search-${tournament.name}`">
-                            <router-link :to="{ path: '/tournamentdetail', query: { id: tournament.id } }">
-                                {{ tournament.name }}
-                            </router-link>
-                        </td>
-                        <td>{{ tournament.start_date }}</td>
-                    </tr>
-                </tbody>
-            </table>
+      <table v-if="isTableVisible">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="tournament in filteredTournaments"
+            :key="tournament.id"
+          >
+            <td
+              :data-cy="`search-${tournament.name}`"
+            >
+              <router-link :to="{ path: '/tournamentdetail', query: { id: tournament.id } }">
+                {{ tournament.name }}
+              </router-link>
+            </td>
+            <td>{{ tournament.start_date }}</td>
+          </tr>
+        </tbody>
+      </table>
 
-            <p v-if="filteredTournaments.length === 0 && isTableVisible">No tournaments found.</p>
-        </div>
+      <p v-if="filteredTournaments.length === 0 && isTableVisible">
+        No tournaments found.
+      </p>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -48,7 +66,7 @@ const isTableVisible = ref(false);
 
 const fetchTournaments = async () => {
     try {
-        let url = `${import.meta.env.VITE_DJANGOURL}tournaments/`;
+        let url = `${import.meta.env.VITE_DJANGOURL}/tournaments/`;
         const allTournaments = [];
 
         while (url) {

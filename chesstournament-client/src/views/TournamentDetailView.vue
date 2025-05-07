@@ -1,196 +1,288 @@
 <template>
-    <div class="tournament-detail">
-        <div v-if="loading">Loading...</div>
-        <div v-else-if="error">{{ error }}</div>
-        <div v-else>
-            <h1 data-cy="tournament-title">Tournament: {{ tournament.name }}</h1>
-
-            <div class="content-container">
-                <!-- Standing Accordion -->
-                <div class="accordion">
-                    <button
-                        class="accordion-button"
-                        data-cy="standing-accordion-button"
-                        @click="toggleAccordion('standing')"
-                    >
-                        Standing
-                    </button>
-                    <div
-                        class="accordion-content"
-                        v-show="activeAccordion === 'standing'"
-                        data-cy="standing-accordion-content"
-                    >
-                        <h3>Standing</h3>
-                        <table class="ranking-table">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Score</th> <!-- Nueva columna para Points -->
-                                    <!-- Generar dinámicamente las columnas según rankingList -->
-                                    <th v-for="field in tournament.rankingList" :key="field">
-                                        {{ getRankingHeader(field) }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="entry in ranking" :key="entry.id" :data-cy="`ranking-${entry.rank}`">
-                                    <td>{{ entry.rank }}</td>
-                                    <td>{{ entry.username }}</td>
-                                    <td>{{ entry.score || 0 }}</td> <!-- Nueva celda para Points -->
-                                    <!-- Generar dinámicamente las celdas según rankingList -->
-                                    <td v-for="field in tournament.rankingList" :key="field">
-                                        {{ entry[field] || 0.00 }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Pairings/Results Accordion -->
-                <div class="accordion">
-                    <button
-                        class="accordion-button"
-                        data-cy="pairings-accordion-button"
-                        @click="toggleAccordion('pairings')"
-                    >
-                        Pairings/Results
-                    </button>
-                    <div
-                        class="accordion-content"
-                        v-show="activeAccordion === 'pairings'"
-                        data-cy="pairings-accordion-content"
-                    >
-                        <h2>Pairings/Results</h2>
-                        <h3 class="tournament-type">{{ tournament.board_type === 'OTB' ? 'OTB' : 'LICHESS' }}</h3>
-                        <div v-if="tournament.board_type === 'LIC'">
-                            <p>
-                                Press <i class="bi bi-send" /> to update the game result. See the
-                                <router-link to="/faq" class="">FAQ</router-link> for more information.
-                            </p>
-                        </div>
-                        <div v-else>
-                            <p>
-                                The abbreviations used in the "result" column are explained at the end of the page.
-                                Press <i class="bi bi-send" /> to update the game result. See the
-                                <router-link to="/faq" class="">FAQ</router-link> for more information.
-                            </p>
-                        </div>
-
-                        <div v-for="round in rounds" :key="round.id" class="round-table">
-                            <h3 :data-cy="round.name.toLowerCase().replace(/\s+/g, '_')">{{ round.formatted_name }}</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>White Player</th>
-                                        <th>Result</th>
-                                        <th>Black Player</th>
-                                        <th v-if="isLoggedIn">Result (Admin)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr
-                                        v-for="game in gamesByRound[round.id] || []"
-                                        :key="game.id"
-                                        :data-cy="`game_${round.number}_${game.count}`"
-                                    >
-                                        <td>{{ game.white_player_name }}</td>
-                                        <td>
-                                            <!-- Mostrar el campo de texto si el torneo es de tipo LIC -->
-                                            <template v-if="tournament.board_type === 'LIC'">
-                                                <template v-if="!game.resultLocked">
-                                                    <input
-                                                        type="text"
-                                                        v-model="game.lichessGameID"
-                                                        placeholder="type gameID"
-                                                        :data-cy="`input-${round.number}-${game.count}`"
-                                                    />
-                                                    <button
-                                                        @click="submitLichessGameID(game)"
-                                                        :data-cy="`button-${round.number}-${game.count}`"
-                                                    >
-                                                        <i class="bi bi-send" />
-                                                    </button>
-                                                </template>
-                                                <template v-else>
-                                                    <div v-if="game.result === 'w'">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
-                                                    </div>
-                                                    <div v-else-if="game.result === 'b'">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
-                                                    </div>
-                                                    <div v-else-if="game.result === '='">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
-                                                    </div>
-                                                    <div v-else>
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">*</p>
-                                                    </div>
-                                                </template>
-                                            </template>
-
-                                            <!-- Mostrar el campo select si el torneo es de tipo OTB -->
-                                            <template v-else>
-                                                <template v-if="!game.resultLocked">
-                                                    <select
-                                                        v-model="game.result"
-                                                        :data-cy="`select-${round.number}-${game.count}`"
-                                                    >
-                                                        <option value="White wins (1-0)" data-cy="White wins (1-0)">White wins (1-0)</option>
-                                                        <option value="Black wins (0-1)" data-cy="Black wins (0-1)">Black wins (0-1)</option>
-                                                        <option value="Draw (1/2-1/2)" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
-                                                        <option value="Unknown Result (*)" data-cy="Unknown Result (*)">Unknown Result (*)</option>
-                                                    </select>
-                                                    <button
-                                                        @click="promptConfirmGameResult(game)"
-                                                        :data-cy="`button-${round.number}-${game.count}`"
-                                                    >
-                                                        <i class="bi bi-send" />
-                                                    </button>
-                                                </template>
-                                                <template v-else>
-                                                    <div v-if="game.result === 'w'">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">1-0</p>
-                                                    </div>
-                                                    <div v-else-if="game.result === 'b'">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">0-1</p>
-                                                    </div>
-                                                    <div v-else-if="game.result === '='">
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">½-½</p>
-                                                    </div>
-                                                    <div v-else>
-                                                        <p :data-cy="`input-${round.number}-${game.count}`">*</p>
-                                                    </div>
-                                                </template>
-                                            </template>
-                                        </td>
-                                        <td>{{ game.black_player_name }}</td>
-                                        <td v-if="isLoggedIn">
-                                            <select
-                                                v-model="game.adminResult"
-                                                :data-cy="`select-admin-${round.number}-${game.count}`"
-                                            >
-                                                    <option value="White wins (1-0)" data-cy="White wins (1-0)">White wins (1-0)</option>
-                                                    <option value="Black wins (0-1)" data-cy="Black wins (0-1)">Black wins (0-1)</option>
-                                                    <option value="Draw (1/2-1/2)" data-cy="Draw (1/2-1/2)">Draw (1/2-1/2)</option>
-                                                    <option value="Unknown Result (*)" data-cy="Unknown Result (*)">Unknown Result (*)</option>
-                                            </select>
-                                            <button
-                                                @click="handleAdminResultChange(game)"
-                                                :data-cy="`button-admin-${round.number}-${game.count}`"
-                                            >
-                                                <i class="bi bi-send" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="tournament-detail">
+    <div v-if="loading">
+      Loading...
     </div>
+    <div v-else-if="error">
+      {{ error }}
+    </div>
+    <div v-else>
+      <h1 data-cy="tournament-title">
+        Tournament: {{ tournament.name }}
+      </h1>
+
+      <div class="content-container">
+        <!-- Standing Accordion -->
+        <div class="accordion">
+          <button
+            class="accordion-button"
+            data-cy="standing-accordion-button"
+            @click="toggleAccordion('standing')"
+          >
+            Standing
+          </button>
+          <div
+            v-show="activeAccordion === 'standing'"
+            class="accordion-content"
+            data-cy="standing-accordion-content"
+          >
+            <h3>Standing</h3>
+            <table class="ranking-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th> <!-- Nueva columna para Points -->
+                  <!-- Generar dinámicamente las columnas según rankingList -->
+                  <th
+                    v-for="field in tournament.rankingList"
+                    :key="field"
+                  >
+                    {{ getRankingHeader(field) }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="entry in ranking"
+                  :key="entry.id"
+                  :data-cy="`ranking-${entry.rank}`"
+                >
+                  <td>{{ entry.rank }}</td>
+                  <td>{{ entry.username }}</td>
+                  <td>{{ entry.score || 0 }}</td> <!-- Nueva celda para Points -->
+                  <!-- Generar dinámicamente las celdas según rankingList -->
+                  <td
+                    v-for="field in tournament.rankingList"
+                    :key="field"
+                  >
+                    {{ entry[field] || 0.00 }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pairings/Results Accordion -->
+        <div class="accordion">
+          <button
+            class="accordion-button"
+            data-cy="pairings-accordion-button"
+            @click="toggleAccordion('pairings')"
+          >
+            Pairings/Results
+          </button>
+          <div
+            v-show="activeAccordion === 'pairings'"
+            class="accordion-content"
+            data-cy="pairings-accordion-content"
+          >
+            <h2>Pairings/Results</h2>
+            <h3 class="tournament-type">
+              {{ tournament.board_type === 'OTB' ? 'OTB' : 'LICHESS' }}
+            </h3>
+            <div v-if="tournament.board_type === 'LIC'">
+              <p>
+                Press <i class="bi bi-send" /> to update the game result. See the
+                <router-link
+                  to="/faq"
+                  class=""
+                >
+                  FAQ
+                </router-link> for more information.
+              </p>
+            </div>
+            <div v-else>
+              <p>
+                The abbreviations used in the "result" column are explained at the end of the page.
+                Press <i class="bi bi-send" /> to update the game result. See the
+                <router-link
+                  to="/faq"
+                  class=""
+                >
+                  FAQ
+                </router-link> for more information.
+              </p>
+            </div>
+
+            <div
+              v-for="round in rounds"
+              :key="round.id"
+              class="round-table"
+            >
+              <h3 :data-cy="round.name.toLowerCase().replace(/\s+/g, '_')">
+                {{ round.formatted_name }}
+              </h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>White Player</th>
+                    <th>Result</th>
+                    <th>Black Player</th>
+                    <th v-if="isLoggedIn">
+                      Result (Admin)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="game in gamesByRound[round.id] || []"
+                    :key="game.id"
+                    :data-cy="`game_${round.number}_${game.count}`"
+                  >
+                    <td>{{ game.white_player_name }}</td>
+                    <td>
+                      <!-- Mostrar el campo de texto si el torneo es de tipo LIC -->
+                      <template v-if="tournament.board_type === 'LIC'">
+                        <template v-if="!game.resultLocked">
+                          <input
+                            v-model="game.lichessGameID"
+                            type="text"
+                            placeholder="type gameID"
+                            :data-cy="`input-${round.number}-${game.count}`"
+                          >
+                          <button
+                            :data-cy="`button-${round.number}-${game.count}`"
+                            @click="submitLichessGameID(game)"
+                          >
+                            <i class="bi bi-send" />
+                          </button>
+                        </template>
+                        <template v-else>
+                          <div v-if="game.result === 'w'">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              1-0
+                            </p>
+                          </div>
+                          <div v-else-if="game.result === 'b'">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              0-1
+                            </p>
+                          </div>
+                          <div v-else-if="game.result === '='">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              ½-½
+                            </p>
+                          </div>
+                          <div v-else>
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              *
+                            </p>
+                          </div>
+                        </template>
+                      </template>
+
+                      <!-- Mostrar el campo select si el torneo es de tipo OTB -->
+                      <template v-else>
+                        <template v-if="!game.resultLocked">
+                          <select
+                            v-model="game.result"
+                            :data-cy="`select-${round.number}-${game.count}`"
+                          >
+                            <option
+                              value="White wins (1-0)"
+                              data-cy="White wins (1-0)"
+                            >
+                              White wins (1-0)
+                            </option>
+                            <option
+                              value="Black wins (0-1)"
+                              data-cy="Black wins (0-1)"
+                            >
+                              Black wins (0-1)
+                            </option>
+                            <option
+                              value="Draw (1/2-1/2)"
+                              data-cy="Draw (1/2-1/2)"
+                            >
+                              Draw (1/2-1/2)
+                            </option>
+                            <option
+                              value="Unknown Result (*)"
+                              data-cy="Unknown Result (*)"
+                            >
+                              Unknown Result (*)
+                            </option>
+                          </select>
+                          <button
+                            :data-cy="`button-${round.number}-${game.count}`"
+                            @click="promptConfirmGameResult(game)"
+                          >
+                            <i class="bi bi-send" />
+                          </button>
+                        </template>
+                        <template v-else>
+                          <div v-if="game.result === 'w'">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              1-0
+                            </p>
+                          </div>
+                          <div v-else-if="game.result === 'b'">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              0-1
+                            </p>
+                          </div>
+                          <div v-else-if="game.result === '='">
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              ½-½
+                            </p>
+                          </div>
+                          <div v-else>
+                            <p :data-cy="`input-${round.number}-${game.count}`">
+                              *
+                            </p>
+                          </div>
+                        </template>
+                      </template>
+                    </td>
+                    <td>{{ game.black_player_name }}</td>
+                    <td v-if="isLoggedIn">
+                      <select
+                        v-model="game.adminResult"
+                        :data-cy="`select-admin-${round.number}-${game.count}`"
+                      >
+                        <option
+                          value="White wins (1-0)"
+                          data-cy="White wins (1-0)"
+                        >
+                          White wins (1-0)
+                        </option>
+                        <option
+                          value="Black wins (0-1)"
+                          data-cy="Black wins (0-1)"
+                        >
+                          Black wins (0-1)
+                        </option>
+                        <option
+                          value="Draw (1/2-1/2)"
+                          data-cy="Draw (1/2-1/2)"
+                        >
+                          Draw (1/2-1/2)
+                        </option>
+                        <option
+                          value="Unknown Result (*)"
+                          data-cy="Unknown Result (*)"
+                        >
+                          Unknown Result (*)
+                        </option>
+                      </select>
+                      <button
+                        :data-cy="`button-admin-${round.number}-${game.count}`"
+                        @click="handleAdminResultChange(game)"
+                      >
+                        <i class="bi bi-send" />
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -224,7 +316,7 @@ async function fetchTournament() {
     if (!id) {
         throw new Error('No tournament ID provided');
     }
-    const res = await fetch(`${import.meta.env.VITE_DJANGOURL}tournaments/${id}/`);
+    const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/tournaments/${id}/`);
     if (!res.ok) {
         throw new Error('Failed to fetch tournament');
     }
@@ -240,7 +332,7 @@ async function fetchTournament() {
 
 async function fetchRounds() {
     const id = route.query.id;
-    const res = await fetch(`${import.meta.env.VITE_DJANGOURL}get_round_results/${id}/`);
+    const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/get_round_results/${id}/`);
     if (!res.ok) {
         throw new Error('Failed to fetch rounds');
     }
@@ -286,7 +378,7 @@ async function fetchRounds() {
 async function fetchRanking() {
     const id = route.query.id;
     try {
-        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}get_ranking/${id}/`);
+        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/get_ranking/${id}/`);
         if (!res.ok) {
             throw new Error('Failed to fetch ranking');
         }
@@ -338,7 +430,7 @@ async function promptConfirmGameResult(game) {
 
     if (userEmail === whitePlayerEmail || userEmail === blackPlayerEmail) {
         try {
-            const res = await fetch(`${import.meta.env.VITE_DJANGOURL}update_otb_game/`, {
+            const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/update_otb_game/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -387,7 +479,7 @@ async function handleAdminResultChange(game) {
 
         const isUnknownResult = game.adminResult === "*";
 
-        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}admin_update_game/`, {
+        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/admin_update_game/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -429,7 +521,7 @@ async function submitLichessGameID(game) {
         }
 
         // Enviar el gameID al backend
-        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}update_lichess_game/`, {
+        const res = await fetch(`${import.meta.env.VITE_DJANGOURL}/update_lichess_game/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
