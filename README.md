@@ -1,6 +1,12 @@
 # Chess Tournament
 Web application for creating and displaying chess tournaments, allowing the use of Lichess games (via its API).
-#TODO: links
+The application was deployed on Render.
+
+## URLs
+You can acces the application or the API with the following links:
+
+- [Application URL](https://chess-tournament-client.onrender.com)
+- [API URL](https://chess-tournament-p20c.onrender.com)
 
 
 ## Environment files
@@ -58,7 +64,7 @@ source venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-2. Performing Django migrations to create the database. #TODO
+2. Performing Django migrations to create the database.
 ```bash
 # Generate the migrations
 python3 manage.py makemigrations
