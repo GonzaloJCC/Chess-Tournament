@@ -2,6 +2,9 @@
 Web application for creating and displaying chess tournaments, allowing the use of Lichess games (via its API).
 The application was deployed on Render.
 
+## Preview
+https://github.com/user-attachments/assets/4e1e2f8d-97c0-439b-a7ed-e6198cc76e53
+
 ## URLs
 You can acces the application or the API with the following links:
 
